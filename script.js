@@ -4,7 +4,6 @@ import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
   activeId: species[0].id,
-  lastTrigger: null,
   observer: null,
 };
 
@@ -33,55 +32,26 @@ export function setActiveSpecies(id) {
     ?.style.setProperty("--timeline-progress", `${progress}%`);
 }
 
-function writeDialog(item) {
-  const values = {
-    "dialog-index": `${item.index} / 06`,
-    "dialog-year": item.year,
-    "dialog-title": item.name,
-    "dialog-scientific": item.scientificName,
-    "dialog-body": item.detail,
-    "dialog-location": item.location,
-    "dialog-cause": item.cause,
-    "dialog-source": item.sourceLabel,
-    "dialog-media-label": item.mediaLabel,
-  };
+export function toggleInlineDetail(trigger) {
+  const detail = document.getElementById(trigger.getAttribute("aria-controls"));
+  if (!detail) return;
 
-  Object.entries(values).forEach(([id, value]) => {
-    const element = document.getElementById(id);
-    if (element) element.textContent = value;
-  });
+  const opening = trigger.getAttribute("aria-expanded") !== "true";
+  trigger.setAttribute("aria-expanded", String(opening));
+  trigger.querySelector("span:first-child").textContent = opening
+    ? "Close story"
+    : "Explore story";
+  detail.hidden = !opening;
+  detail.closest("[data-species-card]")?.classList.toggle("is-expanded", opening);
 
-  const dialog = document.getElementById("story-dialog");
-  dialog?.style.setProperty("--chapter-accent", item.accent);
-}
-
-export function openStory(id, trigger) {
-  const item = getSpecies(id);
-  const dialog = document.getElementById("story-dialog");
-  if (!item || !dialog) return;
-
-  state.lastTrigger = trigger ?? document.activeElement;
-  writeDialog(item);
-
-  if (typeof dialog.showModal === "function") {
-    dialog.showModal();
-  } else {
-    dialog.setAttribute("open", "");
-    dialog.classList.add("is-open");
+  if (window.gsap && !motionQuery.matches) {
+    window.gsap.fromTo(
+      detail,
+      { autoAlpha: 0, y: -12 },
+      { autoAlpha: 1, y: 0, duration: 0.55, ease: "power3.out", overwrite: true },
+    );
   }
-  dialog.querySelector("[data-dialog-close]")?.focus();
-}
-
-export function closeStory() {
-  const dialog = document.getElementById("story-dialog");
-  if (!dialog?.hasAttribute("open")) return;
-
-  if (typeof dialog.close === "function") dialog.close();
-  else {
-    dialog.removeAttribute("open");
-    dialog.classList.remove("is-open");
-  }
-  state.lastTrigger?.focus?.();
+  window.ScrollTrigger?.refresh();
 }
 
 export function initChapterObservers() {
@@ -128,7 +98,7 @@ export function initGsapAnimations() {
 
   document.querySelectorAll(".chapter").forEach((chapter) => {
     const card = chapter.querySelector(".species-card");
-    const media = chapter.querySelector(".chapter__media");
+    const media = chapter.querySelector(".chapter__habitat");
     const id = chapter.dataset.species;
 
     gsap.fromTo(
@@ -142,7 +112,7 @@ export function initGsapAnimations() {
         scrollTrigger: {
           trigger: chapter,
           start: "top 68%",
-          toggleActions: "play none none reverse",
+          toggleActions: "play none none none",
           onEnter: () => setActiveSpecies(id),
           onEnterBack: () => setActiveSpecies(id),
         },
@@ -227,20 +197,9 @@ function bindEvents() {
 
     const storyButton = event.target.closest("[data-detail-trigger]");
     if (storyButton) {
-      openStory(storyButton.dataset.detailTrigger, storyButton);
+      toggleInlineDetail(storyButton);
       return;
     }
-
-    if (event.target.closest("[data-dialog-close]")) closeStory();
-  });
-
-  const dialog = document.getElementById("story-dialog");
-  dialog?.addEventListener("click", (event) => {
-    if (event.target === dialog) closeStory();
-  });
-  dialog?.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    closeStory();
   });
 }
 

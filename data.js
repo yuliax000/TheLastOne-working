@@ -4,6 +4,7 @@ export const species = [
     index: "01",
     year: 1844,
     name: "Great Auk",
+    individualName: "The final pair",
     scientificName: "Pinguinus impennis",
     location: "Eldey Island · North Atlantic",
     summary:
@@ -12,7 +13,9 @@ export const species = [
       "The Great Auk once gathered in immense colonies across the North Atlantic. Flightless and unafraid of people, it was taken for meat, feathers, oil and specimens until only a final pair remained on Eldey Island.",
     cause: "Hunting, egg collecting and commercial exploitation",
     accent: "#9aa58e",
-    mediaLabel: "PLACEHOLDER · NORTH ATLANTIC CLIFF / GREAT AUK",
+    habitatLabel: "North Atlantic cliffs · habitat image placeholder",
+    portraitLabel: "Great Auk · species portrait placeholder",
+    archiveLabel: "Historical illustration · archive placeholder",
     sourceLabel: "Source and image credit to be added",
   },
   {
@@ -20,6 +23,7 @@ export const species = [
     index: "02",
     year: 1914,
     name: "Passenger Pigeon",
+    individualName: "Martha",
     scientificName: "Ectopistes migratorius",
     location: "Cincinnati · United States",
     summary:
@@ -28,7 +32,9 @@ export const species = [
       "Passenger Pigeon flocks once darkened North American skies for hours. Industrial hunting and forest loss collapsed the vast social populations on which the species depended. Martha died at Cincinnati Zoo in 1914.",
     cause: "Commercial hunting and habitat loss",
     accent: "#a79582",
-    mediaLabel: "PLACEHOLDER · FOREST CANOPY / MARTHA",
+    habitatLabel: "North American forest · habitat image placeholder",
+    portraitLabel: "Martha · individual portrait placeholder",
+    archiveLabel: "Passenger pigeon flock · archive placeholder",
     sourceLabel: "Source and image credit to be added",
   },
   {
@@ -36,6 +42,7 @@ export const species = [
     index: "03",
     year: 1936,
     name: "Thylacine",
+    individualName: "Benjamin",
     scientificName: "Thylacinus cynocephalus",
     location: "Hobart · Tasmania",
     summary:
@@ -44,7 +51,9 @@ export const species = [
       "Persecution encouraged by a government bounty intensified the decline of Tasmania's largest marsupial predator. The final known captive animal died at Beaumaris Zoo, only weeks after legal protection began.",
     cause: "Bounty hunting, persecution and ecological pressure",
     accent: "#ae8c63",
-    mediaLabel: "PLACEHOLDER · TASMANIAN BUSHLAND / ARCHIVAL FILM",
+    habitatLabel: "Tasmanian bushland · habitat image placeholder",
+    portraitLabel: "Benjamin · individual portrait placeholder",
+    archiveLabel: "Beaumaris Zoo film · video placeholder",
     sourceLabel: "Source and footage credit to be added",
   },
   {
@@ -52,6 +61,7 @@ export const species = [
     index: "04",
     year: 1987,
     name: "Kauaʻi ʻōʻō",
+    individualName: "The last voice",
     scientificName: "Moho braccatus",
     location: "Alakaʻi Swamp · Kauaʻi",
     summary:
@@ -60,7 +70,9 @@ export const species = [
       "The final confirmed recording captures a lone male calling for a mate. Habitat loss, invasive species, disease and severe storms had reduced the population until the forest held only one side of the duet.",
     cause: "Habitat loss, invasive species, disease and storms",
     accent: "#779183",
-    mediaLabel: "PLACEHOLDER · RAIN FOREST / LAST CALL WAVEFORM",
+    habitatLabel: "Alakaʻi rainforest · habitat image placeholder",
+    portraitLabel: "Kauaʻi ʻōʻō · species portrait placeholder",
+    archiveLabel: "Last call · audio placeholder",
     sourceLabel: "Audio, source and image credit to be added",
   },
   {
@@ -68,6 +80,7 @@ export const species = [
     index: "05",
     year: 2006,
     name: "Baiji",
+    individualName: "Qiqi",
     scientificName: "Lipotes vexillifer",
     location: "Yangtze River · China",
     summary:
@@ -76,7 +89,9 @@ export const species = [
       "The Baiji evolved within the Yangtze for millions of years. Entanglement, vessel traffic, fishing pressure and river development transformed its habitat. The 2006 survey led researchers to declare it functionally extinct.",
     cause: "Bycatch, vessel traffic, fishing and river development",
     accent: "#728e94",
-    mediaLabel: "PLACEHOLDER · YANGTZE WATER / QIQI",
+    habitatLabel: "Yangtze River · habitat image placeholder",
+    portraitLabel: "Qiqi · individual portrait placeholder",
+    archiveLabel: "Yangtze survey · archive placeholder",
     sourceLabel: "Source and image credit to be added",
   },
   {
@@ -84,6 +99,7 @@ export const species = [
     index: "06",
     year: 2012,
     name: "Lonesome George",
+    individualName: "Lonesome George",
     scientificName: "Chelonoidis abingdonii",
     location: "Pinta Island · Galápagos",
     summary:
@@ -92,7 +108,9 @@ export const species = [
       "Introduced goats devastated Pinta Island vegetation after earlier exploitation had reduced its tortoises. George became a global conservation symbol, but breeding attempts produced no surviving offspring.",
     cause: "Historic exploitation and introduced goats",
     accent: "#9b8c67",
-    mediaLabel: "PLACEHOLDER · VOLCANIC ISLAND / GEORGE",
+    habitatLabel: "Pinta Island · habitat image placeholder",
+    portraitLabel: "Lonesome George · individual portrait placeholder",
+    archiveLabel: "Pinta habitat change · archive placeholder",
     sourceLabel: "Source and image credit to be added",
   },
 ];

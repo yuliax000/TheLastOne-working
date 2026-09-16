@@ -34,15 +34,17 @@ async function run() {
   await page.waitForFunction(() =>
     document.querySelector('[data-target="species-passenger-pigeon"]')?.getAttribute("aria-current") === "true",
   );
-  await page.locator('[data-detail-trigger="passenger-pigeon"]').click();
-  await page.waitForSelector("#story-dialog[open]");
-  if ((await page.locator("#dialog-title").textContent()) !== "Passenger Pigeon") {
-    throw new Error("Dialog content did not update");
+  const detailTrigger = page.locator('[data-detail-trigger="passenger-pigeon"]');
+  await detailTrigger.click();
+  await page.waitForSelector("#detail-passenger-pigeon:not([hidden])");
+  if ((await detailTrigger.getAttribute("aria-expanded")) !== "true") {
+    throw new Error("Inline story did not expose its expanded state");
   }
-  await page.keyboard.press("Escape");
-  await page.waitForFunction(() => !document.querySelector("#story-dialog")?.hasAttribute("open"));
-  await page.locator('[data-detail-trigger="passenger-pigeon"]').click();
-  await page.locator("[data-dialog-close]").click();
+  if (!(await page.locator("#detail-passenger-pigeon").textContent()).includes("Martha died")) {
+    throw new Error("Inline story content did not render");
+  }
+  await detailTrigger.click();
+  await page.waitForSelector("#detail-passenger-pigeon[hidden]");
 
   await page.locator("#ending").scrollIntoViewIfNeeded();
   await page.evaluate(() => {
@@ -91,7 +93,7 @@ async function run() {
 
   if (errors.length) throw new Error(`Browser console errors: ${errors.join(" | ")}`);
   await browser.close();
-  console.log("E2E PASS: desktop, dialog, ending, mobile, and reduced-motion flows verified");
+  console.log("E2E PASS: desktop, inline detail, ending, mobile, and reduced-motion flows verified");
 }
 
 run().catch((error) => {

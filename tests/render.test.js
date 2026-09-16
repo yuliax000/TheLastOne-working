@@ -28,6 +28,20 @@ test("renderers include navigation, chapter controls, and ending cards", () => {
     6,
   );
   assert.equal(
+    (renderChapters(species).match(/data-inline-detail/g) || []).length,
+    6,
+  );
+  assert.equal(
+    (renderChapters(species).match(/chapter__habitat/g) || []).length,
+    6,
+  );
+  assert.equal(
+    (renderChapters(species).match(/species-card__portrait/g) || []).length,
+    6,
+  );
+  assert.match(renderChapters(species), /aria-expanded="false"/);
+  assert.match(renderChapters(species), /aria-controls="detail-great-auk"/);
+  assert.equal(
     (renderEndingItems(recentExtinctions).match(/data-ending-item/g) || [])
       .length,
     recentExtinctions.length,
@@ -41,17 +55,17 @@ test("dynamic content is escaped", () => {
   );
 });
 
-test("HTML shell exposes required mounts and accessible dialog", async () => {
+test("HTML shell exposes required mounts without a modal dialog", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   for (const id of [
     "timeline-list",
     "chapters",
     "ending-items",
-    "story-dialog",
   ]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
-  assert.match(html, /aria-modal="true"/);
+  assert.doesNotMatch(html, /<dialog/);
+  assert.doesNotMatch(html, /aria-modal="true"/);
   assert.match(html, /vendor\/gsap\.min\.js/);
 });
 
@@ -72,8 +86,7 @@ test("application module declares fallback and GSAP initializers", async () => {
   const source = await readFile(new URL("../script.js", import.meta.url), "utf8");
   for (const name of [
     "setActiveSpecies",
-    "openStory",
-    "closeStory",
+    "toggleInlineDetail",
     "initChapterObservers",
     "initGsapAnimations",
   ]) {

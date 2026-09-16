@@ -10,7 +10,7 @@
     />
     <title>THE LAST ONE — Scrollytelling Prototype</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles-redesign.css" />
   </head>
   <body>
     <a class="skip-link" href="#chapters">Skip to the stories</a>
@@ -32,12 +32,7 @@
     </nav>
 
     <header class="intro">
-      <div class="intro__eyeline" aria-hidden="true">
-        <span>Extinction archive</span>
-        <span>1844—?</span>
-      </div>
       <div class="intro__content">
-        <p class="intro__kicker">Six stories. Six final witnesses.</p>
         <h1>
           THE LAST
           <span>ONE</span>
@@ -76,41 +71,6 @@
       <p>THE LAST ONE · Working prototype</p>
       <p>Images, audio and verified citations to be added.</p>
     </footer>
-
-    <dialog
-      class="story-dialog"
-      id="story-dialog"
-      aria-labelledby="dialog-title"
-      aria-modal="true"
-    >
-      <button class="dialog-close" type="button" data-dialog-close>
-        <span>Close</span>
-        <span aria-hidden="true">×</span>
-      </button>
-      <div class="story-dialog__layout">
-        <div class="story-dialog__media" aria-hidden="true">
-          <span id="dialog-media-label">ARCHIVE PLACEHOLDER</span>
-        </div>
-        <div class="story-dialog__content">
-          <p class="story-dialog__index" id="dialog-index">01 / 06</p>
-          <p class="story-dialog__year" id="dialog-year">1844</p>
-          <h2 id="dialog-title">Great Auk</h2>
-          <p class="story-dialog__scientific" id="dialog-scientific"></p>
-          <div id="dialog-body"></div>
-          <dl class="story-dialog__facts">
-            <div>
-              <dt>Last record</dt>
-              <dd id="dialog-location"></dd>
-            </div>
-            <div>
-              <dt>Pressure</dt>
-              <dd id="dialog-cause"></dd>
-            </div>
-          </dl>
-          <p class="story-dialog__source" id="dialog-source"></p>
-        </div>
-      </div>
-    </dialog>
 
     <noscript>
       <p class="no-script">
