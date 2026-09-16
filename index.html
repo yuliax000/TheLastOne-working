@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#11120f" />
+    <meta
+      name="description"
+      content="THE LAST ONE — a scrollytelling prototype about the final known individuals of extinct species."
+    />
+    <title>THE LAST ONE — Scrollytelling Prototype</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#chapters">Skip to the stories</a>
+
+    <div class="site-mark" aria-label="The Last One">
+      <span>THE</span>
+      <strong>LAST ONE</strong>
+    </div>
+
+    <nav class="timeline" aria-label="Extinction timeline">
+      <div class="timeline__label">
+        <span>1844</span>
+        <span>2012</span>
+      </div>
+      <div class="timeline__track" aria-hidden="true">
+        <span class="timeline__progress"></span>
+      </div>
+      <ol class="timeline__list" id="timeline-list"></ol>
+    </nav>
+
+    <header class="intro">
+      <div class="intro__eyeline" aria-hidden="true">
+        <span>Extinction archive</span>
+        <span>1844—?</span>
+      </div>
+      <div class="intro__content">
+        <p class="intro__kicker">Six stories. Six final witnesses.</p>
+        <h1>
+          THE LAST
+          <span>ONE</span>
+        </h1>
+        <p class="intro__statement">
+          Extinction rarely arrives as a number. Sometimes it arrives as one
+          animal, waiting for an answer that will never come.
+        </p>
+      </div>
+      <a class="intro__start" href="#species-great-auk">
+        <span>Begin the timeline</span>
+        <span aria-hidden="true">↓</span>
+      </a>
+    </header>
+
+    <main id="main-content">
+      <div id="chapters"></div>
+
+      <section class="ending" id="ending" aria-labelledby="ending-title">
+        <div class="ending__stage">
+          <div class="ending__header">
+            <p>The distance between losses is shrinking.</p>
+            <p class="ending__year" id="ending-year" aria-live="polite">2012</p>
+          </div>
+          <h2 id="ending-title">The timeline accelerates.</h2>
+          <div class="ending__items" id="ending-items"></div>
+          <div class="next-question" id="next-question">
+            <p>Extinction is not only behind us.</p>
+            <p class="next-question__title">NEXT?</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>THE LAST ONE · Working prototype</p>
+      <p>Images, audio and verified citations to be added.</p>
+    </footer>
+
+    <dialog
+      class="story-dialog"
+      id="story-dialog"
+      aria-labelledby="dialog-title"
+      aria-modal="true"
+    >
+      <button class="dialog-close" type="button" data-dialog-close>
+        <span>Close</span>
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="story-dialog__layout">
+        <div class="story-dialog__media" aria-hidden="true">
+          <span id="dialog-media-label">ARCHIVE PLACEHOLDER</span>
+        </div>
+        <div class="story-dialog__content">
+          <p class="story-dialog__index" id="dialog-index">01 / 06</p>
+          <p class="story-dialog__year" id="dialog-year">1844</p>
+          <h2 id="dialog-title">Great Auk</h2>
+          <p class="story-dialog__scientific" id="dialog-scientific"></p>
+          <div id="dialog-body"></div>
+          <dl class="story-dialog__facts">
+            <div>
+              <dt>Last record</dt>
+              <dd id="dialog-location"></dd>
+            </div>
+            <div>
+              <dt>Pressure</dt>
+              <dd id="dialog-cause"></dd>
+            </div>
+          </dl>
+          <p class="story-dialog__source" id="dialog-source"></p>
+        </div>
+      </div>
+    </dialog>
+
+    <noscript>
+      <p class="no-script">
+        This prototype needs JavaScript to assemble the story chapters.
+      </p>
+    </noscript>
+
+    <script src="./vendor/gsap.min.js"></script>
+    <script src="./vendor/ScrollTrigger.min.js"></script>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
