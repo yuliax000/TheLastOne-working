@@ -18,7 +18,7 @@ The opening acts as the threshold to the archive: THE LAST ONE dominates the fra
 - Each species chapter is at least one viewport tall, with a full-bleed habitat layer, a dark readable veil, and a separate animal portrait card.
 - The year is the primary typographic landmark; name, location, summary, and action form a compact reading sequence.
 - Details open inline within their own chapter. The chapter grows; the reader never enters a modal or loses chronological context.
-- The final passage compresses time and visual rhythm before opening into the single question “NEXT?”.
+- The final passage gathers recent losses into one photographic field before opening into the statement “THE STORY IS NOT WRITTEN”.
 
 ## Typography
 
@@ -41,11 +41,13 @@ Habitat and individual portrait are different assets and must remain separate in
 
 ## Motion Grammar
 
-GSAP ScrollTrigger coordinates one continuous motion system: habitats breathe with a restrained scale/parallax shift, cards enter once with short fades, the timeline advances between chapters, and the final chronology accelerates in increasingly short beats. Motion never hides essential content by default and is removed or simplified when reduced motion is requested.
+GSAP ScrollTrigger coordinates one motion system: habitat and portrait cards crossfade at chapter thresholds, the timeline advances between chapters, and recent-extinction photographs accumulate as the reader approaches the final question. Motion never hides essential content by default and is removed or simplified when reduced motion is requested.
 
 ## Interaction States
 
 The story control explicitly changes between “Explore story” and “Close story,” updates `aria-expanded`, and returns focus safely. Timeline controls show current position, hover, and keyboard focus. Text selection, focus rings, scrollbars, and button states use the project palette.
+
+A restrained fixed motion control keeps the scrollytelling animation on by default and lets visitors opt into the reduced-motion version. The final statement links to a separate reference register that preserves the same archive palette and typography.
 
 ## Responsive Rules
 

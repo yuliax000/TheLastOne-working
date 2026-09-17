@@ -32,9 +32,11 @@ The experience is a linear scrollytelling website. Visitors primarily scroll, us
 - A fixed vertical timeline remains on the left.
 - Habitat imagery occupies the full chapter background; a separate species card represents the animal or last known individual.
 - Details expand inline beneath the species card and may later contain text, archival images, audio, or video.
-- The ending accelerates from 2012 toward 2026, flashes recent-extinction placeholders, and resolves to “NEXT?”.
+- The ending advances from 2012 toward 2026, accumulates recent-extinction photographs in one frame, and resolves to “THE STORY IS NOT WRITTEN”.
 - Placeholder media is acceptable until verified, credited assets are supplied.
 - Motion uses GSAP and ScrollTrigger, with a functional reduced-motion experience.
+- Core motion is enabled by default for the narrative; visitors can explicitly switch to reduced motion with the persistent control.
+- A separate references page keeps story, media, and licensing sources editable by species.
 - The site must remain a small, framework-free project that can be edited on GitHub and opened locally.
 
 ## Brand Commitments

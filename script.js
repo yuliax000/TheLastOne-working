@@ -5,6 +5,7 @@ const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
   activeId: species[0].id,
   observer: null,
+  reduceMotion: localStorage.getItem("the-last-one-motion") === "reduce",
 };
 
 function getSpecies(id) {
@@ -26,10 +27,10 @@ export function setActiveSpecies(id) {
     );
   });
 
-  const progress = species.length > 1 ? (index / (species.length - 1)) * 100 : 0;
+  const progress = species.length > 1 ? index / (species.length - 1) : 0;
   document
     .querySelector(".timeline")
-    ?.style.setProperty("--timeline-progress", `${progress}%`);
+    ?.style.setProperty("--timeline-progress", String(progress));
 }
 
 export function toggleInlineDetail(trigger) {
@@ -44,7 +45,7 @@ export function toggleInlineDetail(trigger) {
   detail.hidden = !opening;
   detail.closest("[data-species-card]")?.classList.toggle("is-expanded", opening);
 
-  if (window.gsap && !motionQuery.matches) {
+  if (window.gsap && !state.reduceMotion) {
     window.gsap.fromTo(
       detail,
       { autoAlpha: 0, y: -12 },
@@ -85,101 +86,168 @@ function revealStaticEnding() {
   if (year) year.textContent = "2026";
 }
 
+function initEndingSequence(gsap, ScrollTrigger, reduceMotion = false) {
+  const ending = document.getElementById("ending");
+  const cards = Array.from(document.querySelectorAll("[data-ending-item]"));
+  const steps = Array.from(document.querySelectorAll("[data-ending-step]"));
+  const next = document.getElementById("next-question");
+  const yearElement = document.getElementById("ending-year");
+  if (!ending || !cards.length || !steps.length || !next || !yearElement) return;
+
+  const duration = reduceMotion ? 0 : 0.32;
+  let visibleCount = -1;
+  let closingVisible = false;
+  gsap.set(cards, { autoAlpha: 0, scale: reduceMotion ? 1 : 0.96, y: reduceMotion ? 0 : 16 });
+  gsap.set(next, { autoAlpha: 0, y: reduceMotion ? 0 : 14 });
+
+  const renderStep = (stepIndex) => {
+    const revealCount = Math.min(cards.length, Math.max(0, stepIndex));
+    const showClosing = stepIndex === steps.length - 1;
+
+    if (revealCount !== visibleCount) {
+      cards.forEach((card, index) => {
+        const visible = index < revealCount;
+        gsap.to(card, {
+          autoAlpha: visible ? (showClosing ? 0.24 : 1) : 0,
+          scale: visible ? 1 : (reduceMotion ? 1 : 0.96),
+          y: visible ? 0 : (reduceMotion ? 0 : 16),
+          duration,
+          ease: "power3.out",
+          overwrite: true,
+        });
+      });
+      const latest = cards[Math.max(0, revealCount - 1)];
+      yearElement.textContent = latest?.querySelector(".ending-card__year")?.textContent || "2012";
+      visibleCount = revealCount;
+    }
+
+    if (showClosing !== closingVisible) {
+      if (visibleCount > 0) {
+        gsap.to(cards.slice(0, visibleCount), {
+          opacity: showClosing ? 0.24 : 1,
+          duration,
+          overwrite: true,
+        });
+      }
+      gsap.to(next, {
+        autoAlpha: showClosing ? 1 : 0,
+        y: showClosing ? 0 : 14,
+        duration,
+        ease: "power3.out",
+        overwrite: true,
+      });
+      closingVisible = showClosing;
+    }
+  };
+
+  renderStep(0);
+  steps.forEach((step, index) => {
+    ScrollTrigger.create({
+      trigger: step,
+      start: "top center",
+      end: "bottom center",
+      onEnter: () => renderStep(index),
+      onEnterBack: () => renderStep(index),
+    });
+  });
+}
+
+export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
+  const chapters = Array.from(document.querySelectorAll(".chapter"));
+  if (!chapters.length) return;
+  let activeChapter = null;
+
+  const activateChapter = (chapter) => {
+    if (activeChapter === chapter) return;
+    document.body.classList.add("is-story-active");
+    setActiveSpecies(chapter.dataset.species);
+    const card = chapter.querySelector(".species-card");
+    const habitat = chapter.querySelector(".chapter__habitat");
+    const veil = chapter.querySelector(".chapter__veil");
+
+    if (activeChapter) {
+      gsap.to(
+        [
+          activeChapter.querySelector(".species-card"),
+          activeChapter.querySelector(".chapter__habitat"),
+          activeChapter.querySelector(".chapter__veil"),
+        ],
+        {
+          autoAlpha: 0,
+          duration: reduceMotion ? 0 : 0.22,
+          ease: "power2.out",
+          overwrite: true,
+        },
+      );
+    }
+
+    gsap.fromTo(
+      [habitat, veil],
+      { autoAlpha: 0 },
+      {
+        autoAlpha: 1,
+        duration: reduceMotion ? 0 : 0.45,
+        ease: "power4.out",
+        overwrite: true,
+      },
+    );
+    gsap.fromTo(
+      card,
+      { autoAlpha: 0, yPercent: reduceMotion ? -50 : -47 },
+      {
+        autoAlpha: 1,
+        yPercent: -50,
+        duration: reduceMotion ? 0 : 0.45,
+        ease: "power4.out",
+        overwrite: true,
+      },
+    );
+    activeChapter = chapter;
+  };
+
+  chapters.forEach((chapter, index) => {
+    const card = chapter.querySelector(".species-card");
+    const habitat = chapter.querySelector(".chapter__habitat");
+    const veil = chapter.querySelector(".chapter__veil");
+    gsap.set([card, habitat, veil], { autoAlpha: 0 });
+    gsap.set(card, { yPercent: -50 });
+
+    ScrollTrigger.create({
+      trigger: chapter,
+      start: "top center",
+      end: "bottom center",
+      onEnter: () => activateChapter(chapter),
+      onEnterBack: () => activateChapter(chapter),
+      onLeave: () => {
+        if (index === chapters.length - 1) {
+          gsap.to([card, habitat, veil], { autoAlpha: 0, duration: 0.25, overwrite: true });
+          document.body.classList.remove("is-story-active");
+          activeChapter = null;
+        }
+      },
+      onLeaveBack: () => {
+        if (index === 0) {
+          gsap.set([card, habitat, veil], { autoAlpha: 0 });
+          document.body.classList.remove("is-story-active");
+          activeChapter = null;
+        }
+      },
+    });
+  });
+}
+
 export function initGsapAnimations() {
   const gsap = window.gsap;
   const ScrollTrigger = window.ScrollTrigger;
-  if (!gsap || !ScrollTrigger || motionQuery.matches) {
+  if (!gsap || !ScrollTrigger) {
     revealStaticEnding();
     return false;
   }
 
   gsap.registerPlugin(ScrollTrigger);
   document.body.classList.add("has-gsap");
-
-  document.querySelectorAll(".chapter").forEach((chapter) => {
-    const card = chapter.querySelector(".species-card");
-    const media = chapter.querySelector(".chapter__habitat");
-    const id = chapter.dataset.species;
-
-    gsap.fromTo(
-      card,
-      { autoAlpha: 0, y: 32 },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: chapter,
-          start: "top 68%",
-          toggleActions: "play none none none",
-          onEnter: () => setActiveSpecies(id),
-          onEnterBack: () => setActiveSpecies(id),
-        },
-      },
-    );
-
-    gsap.fromTo(
-      media,
-      { scale: 1.06, yPercent: -1.5 },
-      {
-        scale: 1,
-        yPercent: 1.5,
-        ease: "none",
-        scrollTrigger: {
-          trigger: chapter,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
-        },
-      },
-    );
-  });
-
-  const ending = document.getElementById("ending");
-  const stage = ending?.querySelector(".ending__stage");
-  const cards = Array.from(document.querySelectorAll("[data-ending-item]"));
-  const next = document.getElementById("next-question");
-  const yearElement = document.getElementById("ending-year");
-  if (!ending || !stage || !cards.length || !next || !yearElement) return true;
-
-  gsap.set(cards, { autoAlpha: 0, scale: 0.985 });
-  gsap.set(cards[0], { autoAlpha: 1, scale: 1 });
-  gsap.set(next, { autoAlpha: 0 });
-
-  const yearState = { value: 2012 };
-  const endingTimeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: ending,
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1,
-      pin: stage,
-      pinSpacing: false,
-      anticipatePin: 1,
-    },
-  });
-
-  endingTimeline.to(yearState, {
-    value: 2026,
-    duration: 6,
-    ease: "power3.in",
-    onUpdate: () => {
-      yearElement.textContent = String(Math.round(yearState.value));
-    },
-  }, 0);
-
-  cards.forEach((card, index) => {
-    const at = index * 0.75;
-    if (index > 0) {
-      endingTimeline.to(cards[index - 1], { autoAlpha: 0, scale: 1.025, duration: 0.35 }, at);
-    }
-    endingTimeline.to(card, { autoAlpha: 1, scale: 1, duration: 0.4 }, at + 0.18);
-  });
-
-  endingTimeline
-    .to(cards.at(-1), { autoAlpha: 0, scale: 1.04, duration: 0.45 }, ">+0.3")
-    .to(next, { autoAlpha: 1, duration: 1.1, ease: "power2.out" }, ">+0.25");
+  initPinnedChapters(gsap, ScrollTrigger, state.reduceMotion);
+  initEndingSequence(gsap, ScrollTrigger, state.reduceMotion);
 
   return true;
 }
@@ -189,7 +257,7 @@ function bindEvents() {
     const timelineButton = event.target.closest(".timeline__button");
     if (timelineButton) {
       document.getElementById(timelineButton.dataset.target)?.scrollIntoView({
-        behavior: motionQuery.matches ? "auto" : "smooth",
+        behavior: state.reduceMotion ? "auto" : "smooth",
         block: "center",
       });
       return;
@@ -200,6 +268,13 @@ function bindEvents() {
       toggleInlineDetail(storyButton);
       return;
     }
+
+    const motionToggle = event.target.closest("#motion-toggle");
+    if (motionToggle) {
+      const reduce = !state.reduceMotion;
+      localStorage.setItem("the-last-one-motion", reduce ? "reduce" : "full");
+      window.location.reload();
+    }
   });
 }
 
@@ -208,10 +283,12 @@ function init() {
   document.getElementById("chapters").innerHTML = renderChapters(species);
   document.getElementById("ending-items").innerHTML = renderEndingItems(recentExtinctions);
 
-  if (motionQuery.matches) document.body.classList.add("is-reduced-motion");
+  const motionToggle = document.getElementById("motion-toggle");
+  motionToggle?.setAttribute("aria-pressed", String(state.reduceMotion));
+  if (motionToggle) motionToggle.textContent = state.reduceMotion ? "Enable motion" : "Reduce motion";
+  if (state.reduceMotion) document.body.classList.add("is-reduced-motion");
   bindEvents();
-  initChapterObservers();
-  initGsapAnimations();
+  if (!initGsapAnimations()) initChapterObservers();
   setActiveSpecies(species[0].id);
   document.body.classList.add("is-ready");
 }

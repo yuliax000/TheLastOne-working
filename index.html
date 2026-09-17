@@ -14,6 +14,14 @@
   </head>
   <body>
     <a class="skip-link" href="#chapters">Skip to the stories</a>
+    <button
+      class="motion-toggle"
+      id="motion-toggle"
+      type="button"
+      aria-pressed="false"
+    >
+      Reduce motion
+    </button>
 
     <div class="site-mark" aria-label="The Last One">
       <span>THE</span>
@@ -54,15 +62,26 @@
       <section class="ending" id="ending" aria-labelledby="ending-title">
         <div class="ending__stage">
           <div class="ending__header">
-            <p>The distance between losses is shrinking.</p>
+            <p>Each absence leaves a space for us to notice.</p>
             <p class="ending__year" id="ending-year" aria-live="polite">2012</p>
           </div>
-          <h2 id="ending-title">The timeline accelerates.</h2>
+          <h2 id="ending-title">Recent traces.</h2>
           <div class="ending__items" id="ending-items"></div>
           <div class="next-question" id="next-question">
-            <p>Extinction is not only behind us.</p>
-            <p class="next-question__title">NEXT?</p>
+            <p>WHAT COMES NEXT?</p>
+            <p class="next-question__title">THE STORY IS NOT WRITTEN</p>
+            <a class="references-link" href="./references.html">View references</a>
           </div>
+        </div>
+        <div class="ending__steps" aria-hidden="true">
+          <div class="ending__step" data-ending-step="0"></div>
+          <div class="ending__step" data-ending-step="1"></div>
+          <div class="ending__step" data-ending-step="2"></div>
+          <div class="ending__step" data-ending-step="3"></div>
+          <div class="ending__step" data-ending-step="4"></div>
+          <div class="ending__step" data-ending-step="5"></div>
+          <div class="ending__step" data-ending-step="6"></div>
+          <div class="ending__step" data-ending-step="7"></div>
         </div>
       </section>
     </main>

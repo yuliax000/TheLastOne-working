@@ -1,7 +1,7 @@
 const { chromium } = require("playwright");
 const path = require("node:path");
 
-const baseURL = "http://127.0.0.1:4173/";
+const baseURL = process.env.TLO_BASE_URL || "http://127.0.0.1:4174/";
 const artifactDir = process.env.TLO_ARTIFACT_DIR || process.cwd();
 
 async function run() {
@@ -17,7 +17,7 @@ async function run() {
   });
   page.on("pageerror", (error) => errors.push(error.message));
 
-  await page.goto(baseURL, { waitUntil: "networkidle" });
+  await page.goto(baseURL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("body.is-ready");
   if ((await page.title()) !== "THE LAST ONE — Scrollytelling Prototype") {
     throw new Error(`Unexpected title: ${await page.title()}`);
@@ -69,7 +69,7 @@ async function run() {
   await page.screenshot({ path: path.join(artifactDir, "the-last-one-ending.png") });
 
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
-  await mobile.goto(baseURL, { waitUntil: "networkidle" });
+  await mobile.goto(baseURL, { waitUntil: "domcontentloaded" });
   await mobile.waitForSelector("body.is-ready");
   const overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   if (overflow) throw new Error("Mobile page has horizontal overflow");
@@ -85,7 +85,7 @@ async function run() {
     reducedMotion: "reduce",
   });
   const reduced = await reducedContext.newPage();
-  await reduced.goto(baseURL, { waitUntil: "networkidle" });
+  await reduced.goto(baseURL, { waitUntil: "domcontentloaded" });
   await reduced.waitForSelector("body.is-reduced-motion.is-static-ending");
   if ((await reduced.locator("[data-ending-item]:visible").count()) !== 6) {
     throw new Error("Reduced-motion ending does not expose all cards");

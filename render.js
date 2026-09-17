@@ -87,7 +87,7 @@ export function renderEndingItems(items) {
           <div class="ending-card__image" aria-hidden="true">
             <span>IMAGE PLACEHOLDER</span>
           </div>
-          <div>
+          <div class="ending-card__caption">
             <p class="ending-card__year">${escapeHtml(item.year)}</p>
             <h3>${escapeHtml(item.name)}</h3>
             <p class="ending-card__status">${escapeHtml(item.status)}</p>
