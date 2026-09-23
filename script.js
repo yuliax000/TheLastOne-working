@@ -1,5 +1,6 @@
 import { species, recentExtinctions } from "./data.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
+import { syncHabitatVideos } from "./media.js";
 
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
@@ -43,6 +44,7 @@ export function toggleInlineDetail(trigger) {
     ? "Close story"
     : "Explore story";
   detail.hidden = !opening;
+  if (!opening) detail.querySelectorAll("audio, video").forEach((media) => media.pause());
   detail.closest("[data-species-card]")?.classList.toggle("is-expanded", opening);
 
   if (window.gsap && !state.reduceMotion) {
@@ -68,6 +70,7 @@ export function initChapterObservers() {
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
       if (visible?.target.dataset.species) {
         setActiveSpecies(visible.target.dataset.species);
+        syncHabitatVideos(document.querySelectorAll(".chapter"), visible.target.dataset.species);
       }
     },
     { rootMargin: "-30% 0px -30% 0px", threshold: [0.1, 0.35, 0.6] },
@@ -161,6 +164,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
     if (activeChapter === chapter) return;
     document.body.classList.add("is-story-active");
     setActiveSpecies(chapter.dataset.species);
+    syncHabitatVideos(chapters, state.reduceMotion ? null : chapter.dataset.species);
     const card = chapter.querySelector(".species-card");
     const habitat = chapter.querySelector(".chapter__habitat");
     const veil = chapter.querySelector(".chapter__veil");
@@ -222,6 +226,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
         if (index === chapters.length - 1) {
           gsap.to([card, habitat, veil], { autoAlpha: 0, duration: 0.25, overwrite: true });
           document.body.classList.remove("is-story-active");
+          syncHabitatVideos(chapters, null);
           activeChapter = null;
         }
       },
@@ -229,6 +234,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
         if (index === 0) {
           gsap.set([card, habitat, veil], { autoAlpha: 0 });
           document.body.classList.remove("is-story-active");
+          syncHabitatVideos(chapters, null);
           activeChapter = null;
         }
       },

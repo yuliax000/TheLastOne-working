@@ -39,7 +39,7 @@ export function renderChapters(items) {
           aria-labelledby="title-${escapeHtml(item.id)}"
         >
           <div class="chapter__habitat" role="img" aria-label="${escapeHtml(item.habitatLabel)}">
-            <p class="media-placeholder">${escapeHtml(item.habitatLabel)}</p>
+            ${item.habitatVideo ? `<video data-habitat-video muted loop playsinline preload="none" src="${escapeHtml(item.habitatVideo)}" aria-hidden="true"></video>` : `<p class="media-placeholder">${escapeHtml(item.habitatLabel)}</p>`}
           </div>
           <div class="chapter__veil" aria-hidden="true"></div>
           <article class="species-card" data-species-card>
@@ -65,6 +65,8 @@ export function renderChapters(items) {
               </div>
               <div class="inline-detail__copy">
                 <p>${escapeHtml(item.detail)}</p>
+                ${item.audioSrc ? `<div class="inline-detail__player"><p>${escapeHtml(item.audioLabel || "Audio recording")}</p><audio controls preload="none" src="${escapeHtml(item.audioSrc)}"></audio></div>` : ""}
+                ${item.videoSrc ? `<div class="inline-detail__player"><p>${escapeHtml(item.videoLabel || "Archive video")}</p><video controls playsinline preload="none" src="${escapeHtml(item.videoSrc)}"></video></div>` : ""}
                 <dl>
                   <div><dt>Last record</dt><dd>${escapeHtml(item.location)}</dd></div>
                   <div><dt>Pressure</dt><dd>${escapeHtml(item.cause)}</dd></div>

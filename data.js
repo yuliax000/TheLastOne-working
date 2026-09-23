@@ -1,4 +1,6 @@
 export const species = [
+  // Media paths are optional. Put files in assets/audio or assets/video, then
+  // replace an empty string below with e.g. "./assets/video/great-auk-habitat.mp4".
   {
     id: "great-auk",
     index: "01",
@@ -16,6 +18,9 @@ export const species = [
     habitatLabel: "North Atlantic cliffs · habitat image placeholder",
     portraitLabel: "Great Auk · species portrait placeholder",
     archiveLabel: "Historical illustration · archive placeholder",
+    habitatVideo: "",
+    audioSrc: "",
+    videoSrc: "",
     sourceLabel: "Source and image credit to be added",
   },
   {
@@ -35,6 +40,9 @@ export const species = [
     habitatLabel: "North American forest · habitat image placeholder",
     portraitLabel: "Martha · individual portrait placeholder",
     archiveLabel: "Passenger pigeon flock · archive placeholder",
+    habitatVideo: "",
+    audioSrc: "",
+    videoSrc: "",
     sourceLabel: "Source and image credit to be added",
   },
   {
@@ -54,6 +62,9 @@ export const species = [
     habitatLabel: "Tasmanian bushland · habitat image placeholder",
     portraitLabel: "Benjamin · individual portrait placeholder",
     archiveLabel: "Beaumaris Zoo film · video placeholder",
+    habitatVideo: "",
+    audioSrc: "",
+    videoSrc: "",
     sourceLabel: "Source and footage credit to be added",
   },
   {
@@ -73,6 +84,9 @@ export const species = [
     habitatLabel: "Alakaʻi rainforest · habitat image placeholder",
     portraitLabel: "Kauaʻi ʻōʻō · species portrait placeholder",
     archiveLabel: "Last call · audio placeholder",
+    habitatVideo: "",
+    audioSrc: "",
+    videoSrc: "",
     sourceLabel: "Audio, source and image credit to be added",
   },
   {
@@ -92,6 +106,9 @@ export const species = [
     habitatLabel: "Yangtze River · habitat image placeholder",
     portraitLabel: "Qiqi · individual portrait placeholder",
     archiveLabel: "Yangtze survey · archive placeholder",
+    habitatVideo: "",
+    audioSrc: "",
+    videoSrc: "",
     sourceLabel: "Source and image credit to be added",
   },
   {
@@ -111,6 +128,9 @@ export const species = [
     habitatLabel: "Pinta Island · habitat image placeholder",
     portraitLabel: "Lonesome George · individual portrait placeholder",
     archiveLabel: "Pinta habitat change · archive placeholder",
+    habitatVideo: "",
+    audioSrc: "",
+    videoSrc: "",
     sourceLabel: "Source and image credit to be added",
   },
 ];

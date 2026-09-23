@@ -22,21 +22,33 @@ node --test tests/render.test.js
 
 ## Project files
 
-- `index.html` contains the semantic page shell, ending stage and reusable detail dialog.
-- `styles.css` contains the visual system, responsive layouts and reduced-motion fallbacks.
+- `index.html` contains the page shell and ending stage.
+- `styles-redesign.css` is the active visual system, including responsive layouts and media styling.
 - `data.js` contains all six chapter records and the provisional ending sequence.
 - `render.js` turns the data records into safe chapter, timeline and ending markup.
-- `script.js` connects navigation, the detail dialog, IntersectionObserver, GSAP and ScrollTrigger.
+- `script.js` connects navigation, inline detail panels, media playback, IntersectionObserver, GSAP and ScrollTrigger.
+- `media.js` starts the active habitat video and pauses the others.
 - `tests/render.test.js` checks data completeness and required application contracts.
 
-## Replace the placeholders
+## Add your own audio and video
 
-1. Edit chapter text, years, colours and media labels in `data.js`.
-2. Keep each object's existing field names so the renderers and dialog continue to work.
-3. Replace `.chapter__media` and `.story-dialog__media` placeholder treatments with real images using CSS custom properties or new media fields.
-4. Verify every item in `recentExtinctions` before publication. Their current `status` text deliberately marks unverified proposal entries.
-5. Add final source and licence text to each chapter's `sourceLabel`.
+1. Put your files in `assets/audio/` and `assets/video/`. Use web-friendly MP3 for audio and MP4 (H.264) for video. Keep file names short, lowercase, and free of spaces.
+2. Open `data.js`, find the correct species, and fill any of these optional fields:
+
+```js
+habitatVideo: "./assets/video/great-auk-habitat.mp4",
+audioSrc: "./assets/audio/great-auk-call.mp3",
+videoSrc: "./assets/video/great-auk-archive.mp4",
+```
+
+Leave a field as `""` when you do not have that media. You can also add `audioLabel: "Field recording"` or `videoLabel: "Archive footage"` to change the labels above the players.
+
+The habitat video appears **behind the species card** and starts automatically, silently and on a loop when that chapter becomes active. It pauses when another chapter is active or you leave the story. The detail audio and archive video appear only after clicking **Explore story**, have visible controls, and never autoplay. Closing the detail pauses them. The site's **Reduce motion** setting also prevents habitat-video playback.
+
+If a habitat video cannot play, the existing colour background remains. Test media through WebStorm's local preview or another local server, not by double-clicking `index.html` as a `file://` page.
+
+For each media item, replace the relevant `sourceLabel` in `data.js` and add its full source and licence to `references.html`. Verify every item in `recentExtinctions` before publication.
 
 ## Accessibility
 
-The site uses native buttons and a native modal dialog, restores focus after closing, keeps a semantic reading order, and replaces scroll pinning and rapid transitions when the user prefers reduced motion.
+The site uses native buttons and inline detail panels, keeps a semantic reading order, and includes an explicit Reduce motion control.

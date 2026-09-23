@@ -8,6 +8,7 @@ import {
   renderTimeline,
   renderEndingItems,
 } from "../render.js";
+import { syncHabitatVideos } from "../media.js";
 
 test("the narrative contains six ordered species", () => {
   assert.equal(species.length, 6);
@@ -53,6 +54,47 @@ test("dynamic content is escaped", () => {
     escapeHtml('<img src=x onerror="alert(1)">'),
     "&lt;img src=x onerror=&quot;alert(1)&quot;&gt;",
   );
+});
+
+test("chapters render optional habitat video and detail players only when paths are provided", () => {
+  const withMedia = {
+    ...species[0],
+    habitatVideo: "./assets/video/auk-habitat.mp4",
+    audioSrc: "./assets/audio/auk-call.mp3",
+    videoSrc: "./assets/video/auk-archive.mp4",
+  };
+  const html = renderChapters([withMedia, species[1]]);
+  const first = html.split('id="species-passenger-pigeon"')[0];
+  const second = html.split('id="species-passenger-pigeon"')[1];
+
+  assert.match(first, /<video[^>]*data-habitat-video[^>]*muted[^>]*loop[^>]*playsinline/s);
+  assert.match(first, /src="\.\/assets\/video\/auk-habitat\.mp4"/);
+  assert.match(first, /<audio[^>]*controls[^>]*src="\.\/assets\/audio\/auk-call\.mp3"/s);
+  assert.match(first, /<video[^>]*controls[^>]*src="\.\/assets\/video\/auk-archive\.mp4"/s);
+  assert.doesNotMatch(second, /data-habitat-video|<audio|<video/);
+});
+
+test("media paths are escaped before insertion into HTML", () => {
+  const html = renderChapters([{ ...species[0], habitatVideo: 'x" onerror="alert(1)' }]);
+  assert.doesNotMatch(html, /onerror="alert/);
+  assert.match(html, /x&amp;quot;|x&quot;/);
+});
+
+test("only the active chapter's habitat video plays", () => {
+  const events = [];
+  const chapter = (id) => ({
+    dataset: { species: id },
+    querySelector: () => ({
+      play: () => { events.push(`${id}:play`); return Promise.resolve(); },
+      pause: () => events.push(`${id}:pause`),
+    }),
+  });
+  const chapters = [chapter("great-auk"), chapter("baiji")];
+  syncHabitatVideos(chapters, "baiji");
+  assert.deepEqual(events, ["great-auk:pause", "baiji:play"]);
+  events.length = 0;
+  syncHabitatVideos(chapters, null);
+  assert.deepEqual(events, ["great-auk:pause", "baiji:pause"]);
 });
 
 test("HTML shell exposes required mounts without a modal dialog", async () => {
