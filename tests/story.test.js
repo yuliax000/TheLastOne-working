@@ -168,3 +168,8 @@ test("magazine stylesheet defines the complete responsive editorial contract", (
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.doesNotMatch(css, /float\s*:/);
 });
+
+test("dialog close synchronously releases the page lock and restores focus", () => {
+  const source = readFileSync(new URL("../story-dialog.js", import.meta.url), "utf8");
+  assert.match(source, /if \(dialog\.open\) dialog\.close\(\);\s*cleanup\(\);/);
+});

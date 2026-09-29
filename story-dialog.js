@@ -89,7 +89,7 @@ export function createStoryDialogController({
 
   function close() {
     if (dialog.open) dialog.close();
-    else cleanup();
+    cleanup();
   }
 
   function handleClick(event) {

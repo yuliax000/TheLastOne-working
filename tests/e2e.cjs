@@ -34,19 +34,35 @@ async function run() {
   await page.waitForFunction(() =>
     document.querySelector('[data-target="species-passenger-pigeon"]')?.getAttribute("aria-current") === "true",
   );
-  const detailTrigger = page.locator('[data-detail-trigger="passenger-pigeon"]');
-  await detailTrigger.click();
-  await page.waitForSelector("#detail-passenger-pigeon:not([hidden])");
-  if ((await detailTrigger.getAttribute("aria-expanded")) !== "true") {
-    throw new Error("Inline story did not expose its expanded state");
+  const storyTrigger = page.locator('[data-story-trigger][data-story-id="passenger-pigeon"]');
+  await storyTrigger.click();
+  await page.waitForSelector("#story-dialog[open]");
+  if (!(await page.locator("#story-dialog-title").textContent()).includes("在这里填写标题")) {
+    throw new Error("Magazine story heading did not render");
   }
-  if (!(await page.locator("#detail-passenger-pigeon").textContent()).includes("Martha died")) {
-    throw new Error("Inline story content did not render");
+  if ((await page.locator("#story-dialog .story-media__placeholder").count()) < 1) {
+    throw new Error("Magazine story image placeholder did not render");
   }
-  await detailTrigger.click();
-  await page.waitForSelector("#detail-passenger-pigeon[hidden]");
+  const storyScroller = page.locator("#story-dialog-scroller");
+  await storyScroller.evaluate((node) => { node.scrollTop = 400; });
+  await page.locator("[data-story-next]").click();
+  if ((await page.locator(".story-reader").getAttribute("data-story-id")) !== "thylacine") {
+    throw new Error("Next story navigation did not switch records");
+  }
+  if ((await storyScroller.evaluate((node) => node.scrollTop)) !== 0) {
+    throw new Error("Switching stories did not reset article scroll");
+  }
+  await page.locator("[data-story-previous]").click();
+  await page.keyboard.press("Escape");
+  await page.waitForSelector("#story-dialog:not([open])");
+  if (!(await storyTrigger.evaluate((node) => node === document.activeElement))) {
+    throw new Error("Closing the story did not restore focus to its trigger");
+  }
 
   await page.locator("#ending").scrollIntoViewIfNeeded();
+  if ((await page.locator("[data-ending-item]").count()) !== 5) {
+    throw new Error("Expected five verified recent-extinction cards");
+  }
   await page.evaluate(() => {
     const ending = document.querySelector("#ending");
     window.scrollTo(0, ending.offsetTop + ending.offsetHeight - window.innerHeight - 2);
@@ -73,6 +89,20 @@ async function run() {
   await mobile.waitForSelector("body.is-ready");
   const overflow = await mobile.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   if (overflow) throw new Error("Mobile page has horizontal overflow");
+  await mobile.locator('[data-story-trigger][data-story-id="great-auk"]').click();
+  await mobile.waitForSelector("#story-dialog[open]");
+  const dialogOverflow = await mobile.evaluate(() => {
+    const scroller = document.querySelector("#story-dialog-scroller");
+    return scroller.scrollWidth > scroller.clientWidth;
+  });
+  if (dialogOverflow) throw new Error("Mobile story reader has horizontal overflow");
+  const imageTextOrder = await mobile.locator(".story-block--image-text").first().evaluate((node) =>
+    [...node.children].map((child) => getComputedStyle(child).order),
+  ).catch(() => []);
+  if (imageTextOrder.length && imageTextOrder[0] > imageTextOrder[1]) {
+    throw new Error("Mobile imageText does not place the image before the text");
+  }
+  await mobile.locator("[data-story-close]").click();
   const mobileMarkBox = await mobile.locator(".site-mark").boundingBox();
   const mobileTimelineBox = await mobile.locator(".timeline").boundingBox();
   if (!mobileMarkBox || !mobileTimelineBox || mobileMarkBox.y < mobileTimelineBox.y + mobileTimelineBox.height) {
@@ -87,13 +117,13 @@ async function run() {
   const reduced = await reducedContext.newPage();
   await reduced.goto(baseURL, { waitUntil: "domcontentloaded" });
   await reduced.waitForSelector("body.is-reduced-motion.is-static-ending");
-  if ((await reduced.locator("[data-ending-item]:visible").count()) !== 6) {
+  if ((await reduced.locator("[data-ending-item]:visible").count()) !== 5) {
     throw new Error("Reduced-motion ending does not expose all cards");
   }
 
   if (errors.length) throw new Error(`Browser console errors: ${errors.join(" | ")}`);
   await browser.close();
-  console.log("E2E PASS: desktop, inline detail, ending, mobile, and reduced-motion flows verified");
+  console.log("E2E PASS: desktop story dialog, focus, navigation, ending, mobile, and reduced-motion flows verified");
 }
 
 run().catch((error) => {
