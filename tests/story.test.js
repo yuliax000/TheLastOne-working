@@ -192,6 +192,12 @@ test("magazine stylesheet defines the complete responsive editorial contract", (
   assert.match(css, /\.story-block--size-medium\.story-block--align-right,[\s\S]*?\{\s*float:\s*right/);
   assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.story-block--image\s*\{[^}]*float:\s*none\s*!important/s);
   assert.match(css, /\.story-dialog__close\s*\{[^}]*min-width:[^;}]+;[^}]*width:\s*auto/s);
+  assert.match(css, /\.story-block--size-wide\.story-block--align-center\s*\{[^}]*margin-left:\s*50%;[^}]*margin-right:\s*0/s);
+  for (const selector of ["quote", "size-wide", "image-text"]) {
+    const rule = css.match(new RegExp(`\\.story-block--${selector}\\s*\\{([^}]*)\\}`, "s"))?.[1] ?? "";
+    assert.match(rule, /margin-left:\s*50%/, `${selector} should start from the article midpoint`);
+    assert.match(rule, /margin-right:\s*0/, `${selector} should not use an auto-resolved right margin`);
+  }
 });
 
 test("dialog close synchronously releases the page lock and restores focus", () => {
