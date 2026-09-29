@@ -3,6 +3,7 @@ export const species = [
   // replace an empty string below with e.g. "./assets/video/great-auk-habitat.mp4".
   {
     id: "great-auk",
+    storyId: "great-auk",
     index: "01",
     year: 1844,
     name: "Great Auk",
@@ -25,6 +26,7 @@ export const species = [
   },
   {
     id: "passenger-pigeon",
+    storyId: "passenger-pigeon",
     index: "02",
     year: 1914,
     name: "Passenger Pigeon",
@@ -47,6 +49,7 @@ export const species = [
   },
   {
     id: "thylacine",
+    storyId: "thylacine",
     index: "03",
     year: 1936,
     name: "Thylacine",
@@ -69,6 +72,7 @@ export const species = [
   },
   {
     id: "kauai-oo",
+    storyId: "kauai-oo",
     index: "04",
     year: 1987,
     name: "Kauaʻi ʻōʻō",
@@ -91,6 +95,7 @@ export const species = [
   },
   {
     id: "baiji",
+    storyId: "baiji",
     index: "05",
     year: 2006,
     name: "Baiji",
@@ -113,6 +118,7 @@ export const species = [
   },
   {
     id: "lonesome-george",
+    storyId: "pinta-tortoise",
     index: "06",
     year: 2012,
     name: "Lonesome George",
@@ -165,11 +171,5 @@ export const recentExtinctions = [
     year: 2025,
     name: "Slender-billed Curlew",
     status: "Proposal placeholder — status and year require verification",
-  },
-  {
-    id: "unknown-next",
-    year: 2026,
-    name: "The next species",
-    status: "Narrative placeholder",
   },
 ];
