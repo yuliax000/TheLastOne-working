@@ -14,6 +14,10 @@ Then open [http://127.0.0.1:4173](http://127.0.0.1:4173).
 
 GSAP and ScrollTrigger are pinned locally in `vendor/`, so the complete animation works without an internet connection.
 
+## Edit Explore Story articles
+
+All six magazine articles are edited in `story-content.js`, and their images belong in `assets/stories/`. See [STORY-CONTENT-GUIDE.md](./STORY-CONTENT-GUIDE.md) for the Chinese step-by-step guide, supported block types, image sizing, alignment, captions, credits and sources.
+
 ## Test
 
 ```powershell
@@ -26,7 +30,11 @@ node --test tests/render.test.js
 - `styles-redesign.css` is the active visual system, including responsive layouts and media styling.
 - `data.js` contains all six chapter records and the provisional ending sequence.
 - `render.js` turns the data records into safe chapter, timeline and ending markup.
-- `script.js` connects navigation, inline detail panels, media playback, IntersectionObserver, GSAP and ScrollTrigger.
+- `story-content.js` contains the six editable magazine-story records.
+- `story-renderer.js` safely renders every reusable article block.
+- `story-dialog.js` manages opening, closing, keyboard focus and previous/next story navigation.
+- `story-styles.css` contains the desktop and mobile magazine layouts.
+- `script.js` connects navigation, the Explore Story reader, media playback, IntersectionObserver, GSAP and ScrollTrigger.
 - `media.js` starts the active habitat video and pauses the others.
 - `tests/render.test.js` checks data completeness and required application contracts.
 
@@ -51,4 +59,4 @@ For each media item, replace the relevant `sourceLabel` in `data.js` and add its
 
 ## Accessibility
 
-The site uses native buttons and inline detail panels, keeps a semantic reading order, and includes an explicit Reduce motion control.
+The site uses native buttons and a native dialog, keeps a semantic reading order, restores focus after closing an article, supports Escape, and includes an explicit Reduce motion control.
