@@ -40,6 +40,12 @@ test("story content exposes six ordered placeholder records", () => {
   }
 });
 
+test("all visitor-facing story placeholders are English", () => {
+  assert.doesNotMatch(JSON.stringify(stories.map(normalizeStory)), /[\u3400-\u9fff]/);
+  assert.equal(normalizeStory({}).title, "Add story title here");
+  assert.equal(normalizeStory({}).introduction, "Add introduction here");
+});
+
 test("placeholder fixtures exercise every supported editorial option", () => {
   const blocks = stories.flatMap((story) => story.blocks);
   assert.deepEqual(
@@ -92,7 +98,7 @@ test("normalization tolerates missing optional fields", () => {
   assert.equal(story.title, '“标题” <test>');
   assert.deepEqual(story.blocks, []);
   assert.deepEqual(story.sources, []);
-  assert.equal(story.introduction, "在这里填写导语");
+  assert.equal(story.introduction, "Add introduction here");
 });
 
 test("adjacent story lookup respects content order and boundaries", () => {
@@ -152,7 +158,7 @@ test("magazine stylesheet defines the complete responsive editorial contract", (
   assert.match(css, /\.story-dialog\s*\{/);
   assert.match(css, /\.story-dialog__scroller\s*\{[^}]*overflow-y:\s*auto/s);
   assert.match(css, /\.is-story-dialog-open\s*\{/);
-  assert.match(css, /\.story-reader__body\s*\{[^}]*display:\s*grid/s);
+  assert.match(css, /\.story-reader__body\s*\{[^}]*display:\s*flow-root/s);
   for (const size of ["wide", "medium", "small"]) {
     assert.match(css, new RegExp(`\\.story-block--size-${size}\\s*\\{`));
   }
@@ -166,7 +172,10 @@ test("magazine stylesheet defines the complete responsive editorial contract", (
   assert.match(css, /overflow-wrap:\s*anywhere/);
   assert.match(css, /@media\s*\(max-width:\s*760px\)/);
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
-  assert.doesNotMatch(css, /float\s*:/);
+  assert.match(css, /\.story-block--size-medium\.story-block--align-left,[\s\S]*?\{\s*float:\s*left/);
+  assert.match(css, /\.story-block--size-medium\.story-block--align-right,[\s\S]*?\{\s*float:\s*right/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.story-block--image\s*\{[^}]*float:\s*none\s*!important/s);
+  assert.match(css, /\.story-dialog__close\s*\{[^}]*min-width:[^;}]+;[^}]*width:\s*auto/s);
 });
 
 test("dialog close synchronously releases the page lock and restores focus", () => {

@@ -5,8 +5,26 @@ const IMAGE_ALIGNMENTS = new Set(["left", "right", "center"]);
 const IMAGE_SIDES = new Set(["left", "right"]);
 const BLOCK_TYPES = new Set(["paragraph", "subheading", "image", "imageText", "quote", "divider"]);
 
+const PLACEHOLDER_TRANSLATIONS = new Map([
+  ["在这里填写年份", "Add year here"],
+  ["在这里填写标题", "Add story title here"],
+  ["在这里填写学名", "Add scientific name here"],
+  ["在这里填写栖息地", "Add habitat here"],
+  ["在这里填写最后记录地点", "Add last recorded location here"],
+  ["在这里填写导语", "Add introduction here"],
+  ["在这里填写正文", "Add body text here"],
+  ["在这里填写与图片并排的正文", "Add accompanying text here"],
+  ["在这里填写图片说明", "Add image caption here"],
+  ["在这里填写图片来源", "Add image credit here"],
+  ["在这里填写引语", "Add pull quote here"],
+  ["在这里填写引语出处", "Add quote attribution here"],
+  ["在这里填写小标题", "Add section heading here"],
+  ["在这里填写资料名称", "Add source title here"],
+]);
+
 function text(value, fallback = "") {
-  return typeof value === "string" ? value : fallback;
+  const resolved = typeof value === "string" ? value : fallback;
+  return PLACEHOLDER_TRANSLATIONS.get(resolved) || resolved;
 }
 
 export function normalizeAspectRatio(value) {
@@ -65,12 +83,12 @@ export function normalizeStory(rawStory = {}) {
     chapterId: text(rawStory.chapterId, text(rawStory.id)),
     chapter: text(rawStory.chapter),
     year: text(rawStory.year),
-    title: text(rawStory.title, "在这里填写标题"),
+    title: text(rawStory.title, "Add story title here"),
     englishName: text(rawStory.englishName),
     scientificName: text(rawStory.scientificName),
     habitat: text(rawStory.habitat),
     lastLocation: text(rawStory.lastLocation),
-    introduction: text(rawStory.introduction, "在这里填写导语"),
+    introduction: text(rawStory.introduction, "Add introduction here"),
     accent: /^#[0-9a-f]{6}$/i.test(rawStory.accent || "") ? rawStory.accent : "#ced8c3",
     blocks: rawBlocks.map(normalizeBlock).filter(Boolean),
     sources: rawSources.map((source) => ({
@@ -115,14 +133,14 @@ export function createStoryMedia(documentRef, imageData = {}) {
 
   const placeholder = element(documentRef, "div", "story-media__placeholder");
   placeholder.setAttribute("role", "img");
-  placeholder.setAttribute("aria-label", image.alt || "在这里放置图片");
+  placeholder.setAttribute("aria-label", image.alt || "Place image here");
   placeholder.append(
-    element(documentRef, "span", "story-media__placeholder-title", "在这里放置图片"),
+    element(documentRef, "span", "story-media__placeholder-title", "Place image here"),
     element(
       documentRef,
       "span",
       "story-media__placeholder-ratio",
-      `建议比例 ${image.aspectRatio.replaceAll(" ", "")}`,
+      `Suggested ratio ${image.aspectRatio.replaceAll(" ", "")}`,
     ),
   );
   frame.append(placeholder);
