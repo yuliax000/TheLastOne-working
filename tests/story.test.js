@@ -14,6 +14,10 @@ import {
   normalizeBlock,
   normalizeStory,
 } from "../story-renderer.js";
+import {
+  createStoryDialogController,
+  getStoryNavigationState,
+} from "../story-dialog.js";
 
 const expectedIds = [
   "great-auk",
@@ -120,4 +124,23 @@ test("story normalization preserves valid block order and empty optional media t
   assert.equal(normalized.blocks[1].credit, "");
   assert.equal(normalized.blocks[2].text, "last & literal");
   assert.deepEqual(normalized.sources, []);
+});
+
+test("dialog navigation state exposes adjacent stories and disabled boundaries", () => {
+  assert.deepEqual(getStoryNavigationState(stories, "great-auk"), {
+    activeIndex: 0,
+    previous: null,
+    next: stories[1],
+  });
+  assert.deepEqual(getStoryNavigationState(stories, "pinta-tortoise"), {
+    activeIndex: 5,
+    previous: stories[4],
+    next: null,
+  });
+  assert.deepEqual(getStoryNavigationState(stories, "missing"), {
+    activeIndex: -1,
+    previous: null,
+    next: null,
+  });
+  assert.equal(typeof createStoryDialogController, "function");
 });

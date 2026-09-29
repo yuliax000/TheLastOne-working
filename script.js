@@ -1,4 +1,6 @@
 import { species, recentExtinctions } from "./data.js";
+import { stories } from "./story-content.js";
+import { createStoryDialogController } from "./story-dialog.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 import { syncHabitatVideos } from "./media.js";
 
@@ -7,6 +9,7 @@ const state = {
   activeId: species[0].id,
   observer: null,
   reduceMotion: localStorage.getItem("the-last-one-motion") === "reduce",
+  storyDialog: null,
 };
 
 function getSpecies(id) {
@@ -32,29 +35,6 @@ export function setActiveSpecies(id) {
   document
     .querySelector(".timeline")
     ?.style.setProperty("--timeline-progress", String(progress));
-}
-
-export function toggleInlineDetail(trigger) {
-  const detail = document.getElementById(trigger.getAttribute("aria-controls"));
-  if (!detail) return;
-
-  const opening = trigger.getAttribute("aria-expanded") !== "true";
-  trigger.setAttribute("aria-expanded", String(opening));
-  trigger.querySelector("span:first-child").textContent = opening
-    ? "Close story"
-    : "Explore story";
-  detail.hidden = !opening;
-  if (!opening) detail.querySelectorAll("audio, video").forEach((media) => media.pause());
-  detail.closest("[data-species-card]")?.classList.toggle("is-expanded", opening);
-
-  if (window.gsap && !state.reduceMotion) {
-    window.gsap.fromTo(
-      detail,
-      { autoAlpha: 0, y: -12 },
-      { autoAlpha: 1, y: 0, duration: 0.55, ease: "power3.out", overwrite: true },
-    );
-  }
-  window.ScrollTrigger?.refresh();
 }
 
 export function initChapterObservers() {
@@ -106,6 +86,7 @@ function initEndingSequence(gsap, ScrollTrigger, reduceMotion = false) {
   const renderStep = (stepIndex) => {
     const revealCount = Math.min(cards.length, Math.max(0, stepIndex));
     const showClosing = stepIndex === steps.length - 1;
+    const showPresentYear = stepIndex > cards.length;
 
     if (revealCount !== visibleCount) {
       cards.forEach((card, index) => {
@@ -123,6 +104,8 @@ function initEndingSequence(gsap, ScrollTrigger, reduceMotion = false) {
       yearElement.textContent = latest?.querySelector(".ending-card__year")?.textContent || "2012";
       visibleCount = revealCount;
     }
+
+    if (showPresentYear) yearElement.textContent = "2026";
 
     if (showClosing !== closingVisible) {
       if (visibleCount > 0) {
@@ -269,9 +252,9 @@ function bindEvents() {
       return;
     }
 
-    const storyButton = event.target.closest("[data-detail-trigger]");
+    const storyButton = event.target.closest("[data-story-trigger]");
     if (storyButton) {
-      toggleInlineDetail(storyButton);
+      state.storyDialog?.open(storyButton.dataset.storyId, storyButton);
       return;
     }
 
@@ -284,10 +267,32 @@ function bindEvents() {
   });
 }
 
+function initStoryDialog() {
+  const dialog = document.getElementById("story-dialog");
+  const scroller = document.getElementById("story-dialog-scroller");
+  const content = document.getElementById("story-dialog-content");
+  if (!dialog || !scroller || !content) return null;
+  const reducedMotion = state.reduceMotion || motionQuery.matches;
+  return createStoryDialogController({
+    dialog,
+    scroller,
+    content,
+    stories,
+    reducedMotion,
+    onOpen: () => syncHabitatVideos(document.querySelectorAll(".chapter"), null),
+    onClose: () => {
+      if (!state.reduceMotion) {
+        syncHabitatVideos(document.querySelectorAll(".chapter"), state.activeId);
+      }
+    },
+  });
+}
+
 function init() {
   document.getElementById("timeline-list").innerHTML = renderTimeline(species);
   document.getElementById("chapters").innerHTML = renderChapters(species);
   document.getElementById("ending-items").innerHTML = renderEndingItems(recentExtinctions);
+  state.storyDialog = initStoryDialog();
 
   const motionToggle = document.getElementById("motion-toggle");
   motionToggle?.setAttribute("aria-pressed", String(state.reduceMotion));

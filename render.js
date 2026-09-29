@@ -55,25 +55,10 @@ export function renderChapters(items) {
             <p class="species-card__individual">${escapeHtml(item.individualName)}</p>
             <p class="species-card__scientific"><i>${escapeHtml(item.scientificName)}</i></p>
             <p class="species-card__summary">${escapeHtml(item.summary)}</p>
-            <button class="story-link" type="button" data-detail-trigger="${escapeHtml(item.id)}" aria-expanded="false" aria-controls="detail-${escapeHtml(item.id)}">
+            <button class="story-link" type="button" data-story-trigger data-story-id="${escapeHtml(item.storyId || item.id)}" aria-haspopup="dialog" aria-controls="story-dialog">
               <span>Explore story</span>
               <span class="story-link__mark" aria-hidden="true">+</span>
             </button>
-            <div class="inline-detail" id="detail-${escapeHtml(item.id)}" data-inline-detail hidden>
-              <div class="inline-detail__media" role="img" aria-label="${escapeHtml(item.archiveLabel)}">
-                <span>${escapeHtml(item.archiveLabel)}</span>
-              </div>
-              <div class="inline-detail__copy">
-                <p>${escapeHtml(item.detail)}</p>
-                ${item.audioSrc ? `<div class="inline-detail__player"><p>${escapeHtml(item.audioLabel || "Audio recording")}</p><audio controls preload="none" src="${escapeHtml(item.audioSrc)}"></audio></div>` : ""}
-                ${item.videoSrc ? `<div class="inline-detail__player"><p>${escapeHtml(item.videoLabel || "Archive video")}</p><video controls playsinline preload="none" src="${escapeHtml(item.videoSrc)}"></video></div>` : ""}
-                <dl>
-                  <div><dt>Last record</dt><dd>${escapeHtml(item.location)}</dd></div>
-                  <div><dt>Pressure</dt><dd>${escapeHtml(item.cause)}</dd></div>
-                </dl>
-                <p class="inline-detail__source">${escapeHtml(item.sourceLabel)}</p>
-              </div>
-            </div>
           </article>
           <p class="chapter__scroll-cue" aria-hidden="true">Scroll to continue</p>
         </section>`,

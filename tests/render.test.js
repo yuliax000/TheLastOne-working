@@ -25,28 +25,29 @@ test("the recent extinction collage does not include a speculative 2026 card", (
 });
 
 test("renderers include navigation, chapter controls, and ending cards", () => {
+  const chapters = renderChapters(species);
   assert.match(
     renderTimeline(species),
     /aria-label="Go to Great Auk, 1844"/,
   );
   assert.equal(
-    (renderChapters(species).match(/data-detail-trigger/g) || []).length,
+    (chapters.match(/data-story-trigger/g) || []).length,
     6,
   );
   assert.equal(
-    (renderChapters(species).match(/data-inline-detail/g) || []).length,
+    (chapters.match(/data-inline-detail/g) || []).length,
+    0,
+  );
+  assert.equal(
+    (chapters.match(/chapter__habitat/g) || []).length,
     6,
   );
   assert.equal(
-    (renderChapters(species).match(/chapter__habitat/g) || []).length,
+    (chapters.match(/species-card__portrait/g) || []).length,
     6,
   );
-  assert.equal(
-    (renderChapters(species).match(/species-card__portrait/g) || []).length,
-    6,
-  );
-  assert.match(renderChapters(species), /aria-expanded="false"/);
-  assert.match(renderChapters(species), /aria-controls="detail-great-auk"/);
+  assert.match(chapters, /data-story-id="great-auk"/);
+  assert.match(chapters, /data-story-id="pinta-tortoise"/);
   assert.equal(
     (renderEndingItems(recentExtinctions).match(/data-ending-item/g) || [])
       .length,
@@ -61,12 +62,10 @@ test("dynamic content is escaped", () => {
   );
 });
 
-test("chapters render optional habitat video and detail players only when paths are provided", () => {
+test("chapters render optional habitat video only when a path is provided", () => {
   const withMedia = {
     ...species[0],
     habitatVideo: "./assets/video/auk-habitat.mp4",
-    audioSrc: "./assets/audio/auk-call.mp3",
-    videoSrc: "./assets/video/auk-archive.mp4",
   };
   const html = renderChapters([withMedia, species[1]]);
   const first = html.split('id="species-passenger-pigeon"')[0];
@@ -74,9 +73,7 @@ test("chapters render optional habitat video and detail players only when paths 
 
   assert.match(first, /<video[^>]*data-habitat-video[^>]*muted[^>]*loop[^>]*playsinline/s);
   assert.match(first, /src="\.\/assets\/video\/auk-habitat\.mp4"/);
-  assert.match(first, /<audio[^>]*controls[^>]*src="\.\/assets\/audio\/auk-call\.mp3"/s);
-  assert.match(first, /<video[^>]*controls[^>]*src="\.\/assets\/video\/auk-archive\.mp4"/s);
-  assert.doesNotMatch(second, /data-habitat-video|<audio|<video/);
+  assert.doesNotMatch(second, /data-habitat-video/);
 });
 
 test("media paths are escaped before insertion into HTML", () => {
@@ -136,7 +133,6 @@ test("application module declares fallback and GSAP initializers", async () => {
   const source = await readFile(new URL("../script.js", import.meta.url), "utf8");
   for (const name of [
     "setActiveSpecies",
-    "toggleInlineDetail",
     "initChapterObservers",
     "initPinnedChapters",
     "initGsapAnimations",
