@@ -10,6 +10,11 @@
  * - 图片路径、说明或来源暂时没有内容时保留空字符串 ""。
  */
 
+const LOREM_OPENING = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae justo sed erat tempor posuere. Suspendisse potenti, vivamus posuere neque at sem tincidunt, vitae facilisis nisl luctus.";
+const LOREM_WRAP_LEFT = "Curabitur feugiat, sapien non consequat tincidunt, lectus arcu faucibus erat, sit amet dignissim nisl augue vel neque. Praesent euismod, velit sed interdum tristique, massa lectus fermentum justo, vitae commodo lacus lorem sed augue.";
+const LOREM_WRAP_RIGHT = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Maecenas faucibus mollis interdum, donec ullamcorper nulla non metus auctor fringilla, cras mattis consectetur purus sit amet fermentum.";
+const LOREM_FOLLOW = "Nullam quis risus eget urna mollis ornare vel eu leo. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod, ut fermentum massa justo sit amet risus.";
+
 export const stories = [
   // ============================================================
   // 01 · GREAT AUK
@@ -27,19 +32,23 @@ export const stories = [
     introduction: "在这里填写导语", // 标题下方的大号导语
     accent: "#9aa58e", // 本篇强调色
     blocks: [
-      { type: "paragraph", text: "在这里填写正文" },
+      { type: "paragraph", text: LOREM_OPENING },
       {
         type: "image",
         src: "",
         alt: "",
-        caption: "在这里填写图片说明",
-        credit: "在这里填写图片来源",
-        size: "wide",
-        align: "center",
-        aspectRatio: "16 / 9",
+        caption: "Image placeholder 1 · text wraps on the right",
+        credit: "Add image credit here",
+        size: "small",
+        align: "left",
+        aspectRatio: "4 / 5",
       },
-      { type: "quote", text: "在这里填写引语", attribution: "在这里填写引语出处" },
-      { type: "divider" },
+      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: LOREM_WRAP_RIGHT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [{ label: "在这里填写资料名称", url: "" }], // 资料来源，可增删
   },
@@ -60,30 +69,23 @@ export const stories = [
     introduction: "在这里填写导语", // 标题下方的大号导语
     accent: "#a79582", // 本篇强调色
     blocks: [
-      { type: "paragraph", text: "在这里填写正文" },
+      { type: "paragraph", text: LOREM_OPENING },
       {
         type: "image",
         src: "",
         alt: "",
-        caption: "在这里填写图片说明",
-        credit: "在这里填写图片来源",
-        size: "medium",
+        caption: "Image placeholder 1 · text wraps on the right",
+        credit: "Add image credit here",
+        size: "small",
         align: "left",
-        aspectRatio: "3 / 2",
+        aspectRatio: "4 / 5",
       },
-      {
-        type: "imageText",
-        image: {
-          src: "",
-          alt: "",
-          caption: "在这里填写图片说明",
-          credit: "在这里填写图片来源",
-          aspectRatio: "4 / 5",
-        },
-        text: "在这里填写与图片并排的正文",
-        imageSide: "left",
-      },
-      { type: "subheading", text: "在这里填写小标题" },
+      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: LOREM_WRAP_RIGHT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -104,30 +106,23 @@ export const stories = [
     introduction: "在这里填写导语", // 标题下方的大号导语
     accent: "#ae8c63", // 本篇强调色
     blocks: [
-      { type: "paragraph", text: "在这里填写正文" },
+      { type: "paragraph", text: LOREM_OPENING },
       {
         type: "image",
         src: "",
         alt: "",
-        caption: "在这里填写图片说明",
-        credit: "在这里填写图片来源",
+        caption: "Image placeholder 1 · text wraps on the right",
+        credit: "Add image credit here",
         size: "small",
-        align: "right",
-        aspectRatio: "3 / 2",
+        align: "left",
+        aspectRatio: "4 / 5",
       },
-      {
-        type: "imageText",
-        image: {
-          src: "",
-          alt: "",
-          caption: "在这里填写图片说明",
-          credit: "在这里填写图片来源",
-          aspectRatio: "4 / 5",
-        },
-        text: "在这里填写与图片并排的正文",
-        imageSide: "right",
-      },
-      { type: "quote", text: "在这里填写引语", attribution: "在这里填写引语出处" },
+      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: LOREM_WRAP_RIGHT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -148,19 +143,23 @@ export const stories = [
     introduction: "在这里填写导语", // 标题下方的大号导语
     accent: "#779183", // 本篇强调色
     blocks: [
-      { type: "subheading", text: "在这里填写小标题" },
-      { type: "paragraph", text: "在这里填写正文" },
+      { type: "paragraph", text: LOREM_OPENING },
       {
         type: "image",
         src: "",
         alt: "",
-        caption: "在这里填写图片说明",
-        credit: "在这里填写图片来源",
-        size: "wide",
+        caption: "Image placeholder 1 · text wraps on the right",
+        credit: "Add image credit here",
+        size: "small",
         align: "left",
-        aspectRatio: "16 / 9",
+        aspectRatio: "4 / 5",
       },
-      { type: "divider" },
+      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: LOREM_WRAP_RIGHT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -181,30 +180,23 @@ export const stories = [
     introduction: "在这里填写导语", // 标题下方的大号导语
     accent: "#728e94", // 本篇强调色
     blocks: [
-      { type: "paragraph", text: "在这里填写正文" },
+      { type: "paragraph", text: LOREM_OPENING },
       {
         type: "image",
         src: "",
         alt: "",
-        caption: "在这里填写图片说明",
-        credit: "在这里填写图片来源",
-        size: "medium",
-        align: "center",
-        aspectRatio: "16 / 9",
+        caption: "Image placeholder 1 · text wraps on the right",
+        credit: "Add image credit here",
+        size: "small",
+        align: "left",
+        aspectRatio: "4 / 5",
       },
-      {
-        type: "imageText",
-        image: {
-          src: "",
-          alt: "",
-          caption: "在这里填写图片说明",
-          credit: "在这里填写图片来源",
-          aspectRatio: "4 / 5",
-        },
-        text: "在这里填写与图片并排的正文",
-        imageSide: "right",
-      },
-      { type: "quote", text: "在这里填写引语", attribution: "在这里填写引语出处" },
+      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: LOREM_WRAP_RIGHT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -225,30 +217,23 @@ export const stories = [
     introduction: "在这里填写导语", // 标题下方的大号导语
     accent: "#9b8c67", // 本篇强调色
     blocks: [
-      { type: "paragraph", text: "在这里填写正文" },
+      { type: "paragraph", text: LOREM_OPENING },
       {
         type: "image",
         src: "",
         alt: "",
-        caption: "在这里填写图片说明",
-        credit: "在这里填写图片来源",
+        caption: "Image placeholder 1 · text wraps on the right",
+        credit: "Add image credit here",
         size: "small",
-        align: "center",
-        aspectRatio: "3 / 2",
+        align: "left",
+        aspectRatio: "4 / 5",
       },
-      {
-        type: "imageText",
-        image: {
-          src: "",
-          alt: "",
-          caption: "在这里填写图片说明",
-          credit: "在这里填写图片来源",
-          aspectRatio: "4 / 5",
-        },
-        text: "在这里填写与图片并排的正文",
-        imageSide: "left",
-      },
-      { type: "divider" },
+      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: LOREM_WRAP_RIGHT },
+      { type: "paragraph", text: LOREM_FOLLOW },
+      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },

@@ -46,17 +46,33 @@ test("all visitor-facing story placeholders are English", () => {
   assert.equal(normalizeStory({}).introduction, "Add introduction here");
 });
 
-test("placeholder fixtures exercise every supported editorial option", () => {
-  const blocks = stories.flatMap((story) => story.blocks);
-  assert.deepEqual(
-    new Set(blocks.map((block) => block.type)),
-    new Set(["paragraph", "subheading", "image", "imageText", "quote", "divider"]),
-  );
-  const images = blocks.filter((block) => block.type === "image");
-  assert.deepEqual(new Set(images.map((block) => block.size)), new Set(["wide", "medium", "small"]));
-  assert.deepEqual(new Set(images.map((block) => block.align)), new Set(["left", "right", "center"]));
-  const imageText = blocks.filter((block) => block.type === "imageText");
-  assert.deepEqual(new Set(imageText.map((block) => block.imageSide)), new Set(["left", "right"]));
+test("each story demonstrates three-image magazine pacing and text wrap", () => {
+  for (const story of stories) {
+    const images = story.blocks.filter((block) => block.type === "image");
+    assert.equal(images.length, 3, `${story.id} should contain three image blocks`);
+    assert.ok(images.some((image) => image.size === "small" && image.align === "left"));
+    assert.ok(images.some((image) => image.size === "small" && image.align === "right"));
+    assert.ok(images.some((image) => image.size === "wide" && image.align === "center"));
+    assert.ok(story.blocks.filter((block) => block.type === "paragraph").length >= 4);
+  }
+});
+
+test("renderer normalization keeps every supported editorial option available", () => {
+  const fixtures = [
+    { type: "paragraph", text: "Copy" },
+    { type: "subheading", text: "Heading" },
+    { type: "quote", text: "Quote" },
+    { type: "divider" },
+    { type: "image", size: "wide", align: "center" },
+    { type: "image", size: "medium", align: "left" },
+    { type: "image", size: "small", align: "right" },
+    { type: "imageText", imageSide: "left" },
+    { type: "imageText", imageSide: "right" },
+  ].map(normalizeBlock);
+  assert.deepEqual(new Set(fixtures.map((block) => block.type)), new Set(["paragraph", "subheading", "image", "imageText", "quote", "divider"]));
+  assert.deepEqual(new Set(fixtures.filter((block) => block.type === "image").map((block) => block.size)), new Set(["wide", "medium", "small"]));
+  assert.deepEqual(new Set(fixtures.filter((block) => block.type === "image").map((block) => block.align)), new Set(["left", "right", "center"]));
+  assert.deepEqual(new Set(fixtures.filter((block) => block.type === "imageText").map((block) => block.imageSide)), new Set(["left", "right"]));
 });
 
 test("every existing chapter maps to one story", () => {
