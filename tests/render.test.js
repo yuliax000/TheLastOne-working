@@ -19,6 +19,11 @@ test("the narrative contains six ordered species", () => {
   assert.equal(new Set(species.map((item) => item.id)).size, 6);
 });
 
+test("the recent extinction collage does not include a speculative 2026 card", () => {
+  assert.equal(recentExtinctions.length, 5);
+  assert.doesNotMatch(renderEndingItems(recentExtinctions), /The next species/i);
+});
+
 test("renderers include navigation, chapter controls, and ending cards", () => {
   assert.match(
     renderTimeline(species),
@@ -97,7 +102,7 @@ test("only the active chapter's habitat video plays", () => {
   assert.deepEqual(events, ["great-auk:pause", "baiji:pause"]);
 });
 
-test("HTML shell exposes required mounts without a modal dialog", async () => {
+test("HTML shell exposes required mounts and one shared story dialog", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   for (const id of [
     "timeline-list",
@@ -106,8 +111,11 @@ test("HTML shell exposes required mounts without a modal dialog", async () => {
   ]) {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
-  assert.doesNotMatch(html, /<dialog/);
-  assert.doesNotMatch(html, /aria-modal="true"/);
+  assert.equal((html.match(/<dialog\b/g) || []).length, 1);
+  for (const id of ["story-dialog", "story-dialog-scroller", "story-dialog-content"]) {
+    assert.match(html, new RegExp(`id=["']${id}["']`));
+  }
+  assert.match(html, /story-styles\.css/);
   assert.match(html, /vendor\/gsap\.min\.js/);
 });
 
@@ -177,6 +185,11 @@ test("ending builds an accumulating photo field with a hopeful closing question"
   assert.match(html, /THE STORY IS NOT WRITTEN/);
   assert.equal((html.match(/data-ending-step/g) || []).length, 8);
   assert.match(css, /\.ending-card:nth-child\(2\)/);
+  assert.match(
+    css,
+    /\.ending-card:nth-child\(4\)\{[^}]*right:0;top:36%/s,
+    "the 2020 card should sit below the large ending year on desktop",
+  );
   assert.match(source, /function initEndingSequence/);
   assert.match(source, /querySelectorAll\("\[data-ending-step\]"\)/);
   assert.doesNotMatch(source, /scrub:\s*1/);

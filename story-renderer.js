@@ -95,3 +95,181 @@ export function getAdjacentStory(items, activeId, direction) {
   if (targetIndex === index || targetIndex < 0 || targetIndex >= items.length) return null;
   return items[targetIndex];
 }
+
+function element(documentRef, tagName, className, content) {
+  const node = documentRef.createElement(tagName);
+  if (className) node.className = className;
+  if (content !== undefined) node.textContent = content;
+  return node;
+}
+
+function isSafeLink(value) {
+  return /^(https?:\/\/|\.\.?\/|\/)/i.test(value);
+}
+
+export function createStoryMedia(documentRef, imageData = {}) {
+  const image = normalizeImage(imageData);
+  const figure = element(documentRef, "figure", "story-media");
+  const frame = element(documentRef, "div", "story-media__frame is-placeholder");
+  frame.style.aspectRatio = image.aspectRatio;
+
+  const placeholder = element(documentRef, "div", "story-media__placeholder");
+  placeholder.setAttribute("role", "img");
+  placeholder.setAttribute("aria-label", image.alt || "在这里放置图片");
+  placeholder.append(
+    element(documentRef, "span", "story-media__placeholder-title", "在这里放置图片"),
+    element(
+      documentRef,
+      "span",
+      "story-media__placeholder-ratio",
+      `建议比例 ${image.aspectRatio.replaceAll(" ", "")}`,
+    ),
+  );
+  frame.append(placeholder);
+
+  if (image.src) {
+    const img = element(documentRef, "img", "story-media__image");
+    img.alt = image.alt;
+    img.hidden = true;
+    img.addEventListener("load", () => {
+      img.hidden = false;
+      frame.classList.remove("is-placeholder");
+      frame.classList.add("is-loaded");
+    });
+    img.addEventListener("error", () => {
+      img.remove();
+      frame.classList.remove("is-loaded");
+      frame.classList.add("is-placeholder");
+    });
+    img.src = image.src;
+    frame.append(img);
+  }
+
+  figure.append(frame);
+  if (image.caption || image.credit) {
+    const figcaption = element(documentRef, "figcaption", "story-media__caption");
+    if (image.caption) {
+      figcaption.append(element(documentRef, "span", "story-media__caption-text", image.caption));
+    }
+    if (image.credit) {
+      figcaption.append(element(documentRef, "span", "story-media__credit", image.credit));
+    }
+    figure.append(figcaption);
+  }
+  return figure;
+}
+
+export function createStoryBlock(documentRef, rawBlock) {
+  const block = normalizeBlock(rawBlock);
+  if (!block) return null;
+
+  if (block.type === "paragraph") {
+    return element(documentRef, "p", "story-block story-block--paragraph", block.text);
+  }
+  if (block.type === "subheading") {
+    return element(documentRef, "h2", "story-block story-block--subheading", block.text);
+  }
+  if (block.type === "divider") {
+    const divider = element(documentRef, "div", "story-block story-block--divider");
+    divider.setAttribute("role", "separator");
+    return divider;
+  }
+  if (block.type === "quote") {
+    const quote = element(documentRef, "blockquote", "story-block story-block--quote");
+    quote.append(element(documentRef, "p", "story-quote__text", block.text));
+    if (block.attribution) {
+      quote.append(element(documentRef, "cite", "story-quote__attribution", block.attribution));
+    }
+    return quote;
+  }
+  if (block.type === "imageText") {
+    const imageText = element(
+      documentRef,
+      "section",
+      `story-block story-block--image-text story-block--image-side-${block.imageSide}`,
+    );
+    imageText.append(
+      createStoryMedia(documentRef, block.image),
+      element(documentRef, "p", "story-image-text__copy", block.text),
+    );
+    return imageText;
+  }
+
+  const media = createStoryMedia(documentRef, block);
+  media.classList.add(
+    "story-block",
+    "story-block--image",
+    `story-block--size-${block.size}`,
+    `story-block--align-${block.align}`,
+  );
+  return media;
+}
+
+export function createStoryArticle(documentRef, rawStory) {
+  const story = normalizeStory(rawStory);
+  const article = element(documentRef, "article", "story-reader");
+  article.dataset.storyId = story.id;
+  article.style.setProperty("--story-accent", story.accent);
+
+  const header = element(documentRef, "header", "story-reader__header");
+  const eyebrow = element(documentRef, "p", "story-reader__eyebrow");
+  eyebrow.append(
+    element(documentRef, "span", "story-reader__chapter", `Story ${story.chapter}`),
+    element(documentRef, "span", "story-reader__year", story.year),
+  );
+  const heading = element(documentRef, "h1", "story-reader__title", story.title);
+  heading.id = "story-dialog-title";
+  heading.tabIndex = -1;
+  header.append(eyebrow, heading);
+  if (story.englishName || story.scientificName) {
+    const names = element(documentRef, "p", "story-reader__names");
+    if (story.englishName) names.append(element(documentRef, "span", "", story.englishName));
+    if (story.scientificName) names.append(element(documentRef, "i", "", story.scientificName));
+    header.append(names);
+  }
+  if (story.habitat || story.lastLocation) {
+    const meta = element(documentRef, "dl", "story-reader__meta");
+    if (story.habitat) {
+      meta.append(element(documentRef, "dt", "", "Habitat"), element(documentRef, "dd", "", story.habitat));
+    }
+    if (story.lastLocation) {
+      meta.append(element(documentRef, "dt", "", "Last record"), element(documentRef, "dd", "", story.lastLocation));
+    }
+    header.append(meta);
+  }
+  header.append(element(documentRef, "p", "story-reader__introduction", story.introduction));
+  article.append(header);
+
+  const body = element(documentRef, "div", "story-reader__body");
+  story.blocks.forEach((block) => {
+    const rendered = createStoryBlock(documentRef, block);
+    if (rendered) body.append(rendered);
+  });
+  article.append(body);
+
+  const visibleSources = story.sources.filter((source) => source.label);
+  if (visibleSources.length) {
+    const sourcesSection = element(documentRef, "section", "story-reader__sources");
+    sourcesSection.append(element(documentRef, "h2", "", "Sources"));
+    const list = element(documentRef, "ol", "");
+    visibleSources.forEach((source) => {
+      const item = element(documentRef, "li", "");
+      if (source.url && isSafeLink(source.url)) {
+        const link = element(documentRef, "a", "", source.label);
+        link.href = source.url;
+        if (/^https?:\/\//i.test(source.url)) {
+          link.target = "_blank";
+          link.rel = "noreferrer";
+        }
+        item.append(link);
+      } else {
+        item.textContent = source.label;
+      }
+      list.append(item);
+    });
+    sourcesSection.append(list);
+    article.append(sourcesSection);
+  }
+
+  return article;
+}

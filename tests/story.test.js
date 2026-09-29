@@ -4,6 +4,9 @@ import assert from "node:assert/strict";
 import { species } from "../data.js";
 import { stories } from "../story-content.js";
 import {
+  createStoryArticle,
+  createStoryBlock,
+  createStoryMedia,
   findStoryByChapterId,
   findStoryById,
   getAdjacentStory,
@@ -92,4 +95,29 @@ test("adjacent story lookup respects content order and boundaries", () => {
   assert.equal(getAdjacentStory(stories, "great-auk", "next")?.id, "passenger-pigeon");
   assert.equal(getAdjacentStory(stories, "pinta-tortoise", "next"), null);
   assert.equal(getAdjacentStory(stories, "baiji", "previous")?.id, "kauai-oo");
+});
+
+test("shared story DOM builders are exported", () => {
+  assert.equal(typeof createStoryArticle, "function");
+  assert.equal(typeof createStoryBlock, "function");
+  assert.equal(typeof createStoryMedia, "function");
+});
+
+test("story normalization preserves valid block order and empty optional media text", () => {
+  const normalized = normalizeStory({
+    id: "ordered",
+    blocks: [
+      { type: "paragraph", text: "first <literal>" },
+      { type: "unknown", text: "skip" },
+      { type: "image", src: "", caption: "", credit: "" },
+      { type: "subheading", text: "last & literal" },
+    ],
+    sources: [],
+  });
+  assert.deepEqual(normalized.blocks.map((block) => block.type), ["paragraph", "image", "subheading"]);
+  assert.equal(normalized.blocks[0].text, "first <literal>");
+  assert.equal(normalized.blocks[1].caption, "");
+  assert.equal(normalized.blocks[1].credit, "");
+  assert.equal(normalized.blocks[2].text, "last & literal");
+  assert.deepEqual(normalized.sources, []);
 });

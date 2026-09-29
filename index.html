@@ -11,6 +11,7 @@
     <title>THE LAST ONE — Scrollytelling Prototype</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles-redesign.css" />
+    <link rel="stylesheet" href="./story-styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#chapters">Skip to the stories</a>
@@ -85,6 +86,22 @@
         </div>
       </section>
     </main>
+
+    <dialog class="story-dialog" id="story-dialog" aria-labelledby="story-dialog-title">
+      <div class="story-dialog__surface">
+        <button class="story-dialog__close" type="button" data-story-close>
+          <span>Close story</span>
+          <span aria-hidden="true">×</span>
+        </button>
+        <div class="story-dialog__scroller" id="story-dialog-scroller">
+          <div id="story-dialog-content"></div>
+          <nav class="story-dialog__nav" id="story-dialog-nav" aria-label="Story navigation">
+            <button type="button" data-story-previous>Previous species</button>
+            <button type="button" data-story-next>Next species</button>
+          </nav>
+        </div>
+      </div>
+    </dialog>
 
     <footer class="site-footer">
       <p>THE LAST ONE · Working prototype</p>
