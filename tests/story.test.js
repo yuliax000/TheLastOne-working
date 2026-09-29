@@ -46,15 +46,32 @@ test("all visitor-facing story placeholders are English", () => {
   assert.equal(normalizeStory({}).introduction, "Add introduction here");
 });
 
-test("each story demonstrates three-image magazine pacing and text wrap", () => {
+test("each story ends with a centered medium media block after two wrapped images", () => {
   for (const story of stories) {
     const images = story.blocks.filter((block) => block.type === "image");
-    assert.equal(images.length, 3, `${story.id} should contain three image blocks`);
+    const finalBlock = story.blocks.at(-1);
+    assert.equal(images.length, 2, `${story.id} should contain two wrapped image blocks`);
     assert.ok(images.some((image) => image.size === "small" && image.align === "left"));
     assert.ok(images.some((image) => image.size === "small" && image.align === "right"));
-    assert.ok(images.some((image) => image.size === "wide" && image.align === "center"));
+    assert.equal(finalBlock.type, "media");
+    assert.equal(finalBlock.mediaType, "image");
+    assert.equal(finalBlock.size, "medium");
+    assert.equal(finalBlock.align, "center");
     assert.ok(story.blocks.filter((block) => block.type === "paragraph").length >= 4);
   }
+});
+
+test("media blocks normalize image video and audio options safely", () => {
+  const normalized = [
+    normalizeBlock({ type: "media", mediaType: "image", src: "photo.jpg" }),
+    normalizeBlock({ type: "media", mediaType: "video", src: "film.mp4", poster: "poster.jpg" }),
+    normalizeBlock({ type: "media", mediaType: "audio", src: "call.mp3" }),
+    normalizeBlock({ type: "media", mediaType: "unknown", src: "fallback.jpg" }),
+  ];
+
+  assert.deepEqual(normalized.map((block) => block.mediaType), ["image", "video", "audio", "image"]);
+  assert.equal(normalized[1].poster, "poster.jpg");
+  assert.ok(normalized.every((block) => block.type === "media"));
 });
 
 test("renderer normalization keeps every supported editorial option available", () => {

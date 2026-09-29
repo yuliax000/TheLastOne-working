@@ -110,6 +110,45 @@ align: "center"
 
 `imageSide` 可选 `"left"` 或 `"right"`。在手机上，两种都会自动变为图片在上、文字在下。
 
+## 7A. 将最后一个媒体替换成图片、视频或音频
+
+每篇故事最后一个区块使用通用 `media` 类型。默认是尺寸较克制的居中图片：
+
+```js
+{
+  type: "media",
+  mediaType: "image", // 可改为 "video" 或 "audio"
+  src: "./assets/stories/file-name.jpg",
+  poster: "", // 仅视频需要，可填写视频封面图路径
+  alt: "在这里填写媒体内容描述",
+  caption: "在这里填写媒体说明",
+  credit: "在这里填写媒体来源",
+  size: "medium",
+  align: "center",
+  aspectRatio: "16 / 9",
+},
+```
+
+替换成视频时，将 `mediaType` 改为 `"video"`，并把 MP4 文件放进 `assets/stories/` 或 `assets/video/`。视频带播放控制，不会自动播放。
+
+替换成音频时，将 `mediaType` 改为 `"audio"`，并把 MP3、WAV 或 OGG 文件放进 `assets/stories/` 或 `assets/audio/`。音频会显示播放器；`poster` 和 `aspectRatio` 对音频不起作用。
+
+如果路径为空或文件加载失败，网页会自动显示对应的 image、video 或 audio 占位区域。
+
+## 7B. 添加全局环境音
+
+全局音频设置在根目录的 `data.js` 顶部：
+
+```js
+export const globalAudio = {
+  src: "./assets/audio/ambient.mp3",
+  label: "Ambient soundscape",
+  volume: 0.35,
+};
+```
+
+将音频文件放进 `assets/audio/`，再填写 `src`。`volume` 可填写 `0` 到 `1`。`src` 留空时网页不会显示声音按钮；填写后，右下角会出现 `Sound on`。浏览器要求访客先点击按钮，网站不会强制自动播放声音。
+
 ## 8. 添加引语和小标题
 
 大号引语：
@@ -136,7 +175,7 @@ align: "center"
 
 ## 9. 删除或调整区块
 
-删除 `blocks` 中不需要的完整对象即可。增删或重新排列 `paragraph`、`image`、`imageText`、`quote`、`subheading` 和 `divider` 时，不需要修改任何渲染代码。
+删除 `blocks` 中不需要的完整对象即可。增删或重新排列 `paragraph`、`image`、`media`、`imageText`、`quote`、`subheading` 和 `divider` 时，不需要修改任何渲染代码。
 
 资料来源放在文章记录末尾：
 
@@ -197,14 +236,16 @@ sources: [
     },
     { type: "divider" },
     {
-      type: "image",
+      type: "media",
+      mediaType: "image",
       src: "",
+      poster: "",
       alt: "",
-      caption: "在这里填写图片说明",
-      credit: "在这里填写图片来源",
-      size: "small",
-      align: "left",
-      aspectRatio: "3 / 2",
+      caption: "在这里填写媒体说明",
+      credit: "在这里填写媒体来源",
+      size: "medium",
+      align: "center",
+      aspectRatio: "16 / 9",
     },
   ],
   sources: [

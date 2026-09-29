@@ -79,6 +79,8 @@ body{background:#1b1f1c}
 
 .motion-toggle{position:fixed;z-index:30;top:22px;right:24px;padding:.55rem .75rem;border:1px solid #ced8c34d;background:#1b1f1ce8;color:var(--lichen);cursor:pointer;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
 .motion-toggle:hover{border-color:#ced8c3a6;background:#252b26}
+.sound-toggle{position:fixed;z-index:30;right:24px;bottom:22px;min-width:7.6rem;padding:.65rem .9rem;border:1px solid #ced8c34d;background:#1b1f1ced;color:var(--lichen);cursor:pointer;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+.sound-toggle:hover{border-color:#ced8c3a6;background:#252b26}.sound-toggle:disabled{cursor:not-allowed;color:var(--stone);opacity:.7}.sound-toggle[hidden]{display:none}
 .references-link{position:relative;z-index:2;justify-self:center;margin-top:2rem;padding:.7rem 0;border-bottom:1px solid #ced8c37a;color:var(--bone);font-size:.72rem;letter-spacing:.16em;text-decoration:none;text-transform:uppercase}
 
 /* References */
@@ -99,6 +101,7 @@ body{background:#1b1f1c}
 
 @media(max-width:760px){
   .motion-toggle{top:14px;right:12px;font-size:.62rem}
+  .sound-toggle{right:12px;bottom:12px;min-width:6.8rem;font-size:.7rem}
   .references-hero{padding-top:80px}
   .reference-entry{grid-template-columns:1fr;gap:1rem}
   .references-footer{flex-direction:column}

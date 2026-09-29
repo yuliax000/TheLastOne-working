@@ -3,7 +3,8 @@ import { stories } from "./story-content.js";
 const IMAGE_SIZES = new Set(["wide", "medium", "small"]);
 const IMAGE_ALIGNMENTS = new Set(["left", "right", "center"]);
 const IMAGE_SIDES = new Set(["left", "right"]);
-const BLOCK_TYPES = new Set(["paragraph", "subheading", "image", "imageText", "quote", "divider"]);
+const MEDIA_TYPES = new Set(["image", "video", "audio"]);
+const BLOCK_TYPES = new Set(["paragraph", "subheading", "image", "media", "imageText", "quote", "divider"]);
 
 const PLACEHOLDER_TRANSLATIONS = new Map([
   ["在这里填写年份", "Add year here"],
@@ -34,14 +35,20 @@ export function normalizeAspectRatio(value) {
   return `${match[1]} / ${match[2]}`;
 }
 
-function normalizeImage(image = {}) {
+function normalizeMedia(media = {}) {
   return {
-    src: text(image.src),
-    alt: text(image.alt),
-    caption: text(image.caption),
-    credit: text(image.credit),
-    aspectRatio: normalizeAspectRatio(image.aspectRatio),
+    src: text(media.src),
+    poster: text(media.poster),
+    alt: text(media.alt),
+    caption: text(media.caption),
+    credit: text(media.credit),
+    aspectRatio: normalizeAspectRatio(media.aspectRatio),
   };
+}
+
+function normalizeImage(image = {}) {
+  const { poster, ...normalized } = normalizeMedia(image);
+  return normalized;
 }
 
 export function normalizeBlock(block) {
@@ -64,6 +71,16 @@ export function normalizeBlock(block) {
       image: normalizeImage(block.image),
       text: text(block.text),
       imageSide: IMAGE_SIDES.has(block.imageSide) ? block.imageSide : "left",
+    };
+  }
+
+  if (block.type === "media") {
+    return {
+      type: "media",
+      mediaType: MEDIA_TYPES.has(block.mediaType) ? block.mediaType : "image",
+      ...normalizeMedia(block),
+      size: IMAGE_SIZES.has(block.size) ? block.size : "medium",
+      align: IMAGE_ALIGNMENTS.has(block.align) ? block.align : "center",
     };
   }
 
@@ -125,52 +142,70 @@ function isSafeLink(value) {
   return /^(https?:\/\/|\.\.?\/|\/)/i.test(value);
 }
 
-export function createStoryMedia(documentRef, imageData = {}) {
-  const image = normalizeImage(imageData);
+export function createStoryMedia(documentRef, mediaData = {}) {
+  const media = {
+    mediaType: MEDIA_TYPES.has(mediaData.mediaType) ? mediaData.mediaType : "image",
+    ...normalizeMedia(mediaData),
+  };
+  const mediaLabel = media.mediaType === "image" ? "image" : media.mediaType;
   const figure = element(documentRef, "figure", "story-media");
   const frame = element(documentRef, "div", "story-media__frame is-placeholder");
-  frame.style.aspectRatio = image.aspectRatio;
+  frame.style.aspectRatio = media.mediaType === "audio" ? "auto" : media.aspectRatio;
+  frame.dataset.mediaType = media.mediaType;
 
   const placeholder = element(documentRef, "div", "story-media__placeholder");
-  placeholder.setAttribute("role", "img");
-  placeholder.setAttribute("aria-label", image.alt || "Place image here");
+  placeholder.setAttribute("role", media.mediaType === "image" ? "img" : "status");
+  placeholder.setAttribute("aria-label", media.alt || `Place ${mediaLabel} here`);
   placeholder.append(
-    element(documentRef, "span", "story-media__placeholder-title", "Place image here"),
+    element(documentRef, "span", "story-media__placeholder-title", `Place ${mediaLabel} here`),
     element(
       documentRef,
       "span",
       "story-media__placeholder-ratio",
-      `Suggested ratio ${image.aspectRatio.replaceAll(" ", "")}`,
+      media.mediaType === "audio"
+        ? "Add an MP3, WAV or OGG file"
+        : `Suggested ratio ${media.aspectRatio.replaceAll(" ", "")}`,
     ),
   );
   frame.append(placeholder);
 
-  if (image.src) {
-    const img = element(documentRef, "img", "story-media__image");
-    img.alt = image.alt;
-    img.hidden = true;
-    img.addEventListener("load", () => {
-      img.hidden = false;
+  if (media.src) {
+    const mediaElement = element(documentRef, media.mediaType === "image" ? "img" : media.mediaType, `story-media__${media.mediaType}`);
+    mediaElement.hidden = true;
+    if (media.mediaType === "image") mediaElement.alt = media.alt;
+    if (media.mediaType === "video") {
+      mediaElement.controls = true;
+      mediaElement.playsInline = true;
+      mediaElement.preload = "metadata";
+      if (media.poster) mediaElement.poster = media.poster;
+    }
+    if (media.mediaType === "audio") {
+      mediaElement.controls = true;
+      mediaElement.preload = "metadata";
+    }
+    const readyEvent = media.mediaType === "image" ? "load" : "loadedmetadata";
+    mediaElement.addEventListener(readyEvent, () => {
+      mediaElement.hidden = false;
       frame.classList.remove("is-placeholder");
       frame.classList.add("is-loaded");
     });
-    img.addEventListener("error", () => {
-      img.remove();
+    mediaElement.addEventListener("error", () => {
+      mediaElement.remove();
       frame.classList.remove("is-loaded");
       frame.classList.add("is-placeholder");
     });
-    img.src = image.src;
-    frame.append(img);
+    mediaElement.src = media.src;
+    frame.append(mediaElement);
   }
 
   figure.append(frame);
-  if (image.caption || image.credit) {
+  if (media.caption || media.credit) {
     const figcaption = element(documentRef, "figcaption", "story-media__caption");
-    if (image.caption) {
-      figcaption.append(element(documentRef, "span", "story-media__caption-text", image.caption));
+    if (media.caption) {
+      figcaption.append(element(documentRef, "span", "story-media__caption-text", media.caption));
     }
-    if (image.credit) {
-      figcaption.append(element(documentRef, "span", "story-media__credit", image.credit));
+    if (media.credit) {
+      figcaption.append(element(documentRef, "span", "story-media__credit", media.credit));
     }
     figure.append(figcaption);
   }
@@ -213,14 +248,14 @@ export function createStoryBlock(documentRef, rawBlock) {
     return imageText;
   }
 
-  const media = createStoryMedia(documentRef, block);
-  media.classList.add(
+  const mediaBlock = createStoryMedia(documentRef, block);
+  mediaBlock.classList.add(
     "story-block",
     "story-block--image",
     `story-block--size-${block.size}`,
     `story-block--align-${block.align}`,
   );
-  return media;
+  return mediaBlock;
 }
 
 export function createStoryArticle(documentRef, rawStory) {

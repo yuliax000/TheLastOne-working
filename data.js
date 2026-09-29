@@ -1,3 +1,11 @@
+// Optional site-wide ambience. Put the file in assets/audio and add its path.
+// Playback begins only after the visitor selects “Sound on”.
+export const globalAudio = {
+  src: "",
+  label: "Ambient soundscape",
+  volume: 0.35,
+};
+
 export const species = [
   // Media paths are optional. Put files in assets/audio or assets/video, then
   // replace an empty string below with e.g. "./assets/video/great-auk-habitat.mp4".

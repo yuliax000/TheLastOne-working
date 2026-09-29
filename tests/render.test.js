@@ -9,6 +9,72 @@ import {
   renderEndingItems,
 } from "../render.js";
 import { syncHabitatVideos } from "../media.js";
+import { createGlobalAudioController } from "../global-audio.js";
+
+test("global audio exposes a reusable controller", async () => {
+  const module = await import("../global-audio.js").catch(() => ({}));
+  assert.equal(typeof module.createGlobalAudioController, "function");
+});
+
+test("global audio stays hidden without a source and toggles configured sound", async () => {
+  const listeners = new Map();
+  const attributes = new Map();
+  const button = {
+    hidden: false,
+    textContent: "",
+    addEventListener: (name, handler) => listeners.set(name, handler),
+    setAttribute: (name, value) => attributes.set(name, value),
+  };
+  const audio = {
+    src: "",
+    loop: false,
+    volume: 1,
+    paused: true,
+    playCalls: 0,
+    pauseCalls: 0,
+    play() { this.paused = false; this.playCalls += 1; return Promise.resolve(); },
+    pause() { this.paused = true; this.pauseCalls += 1; },
+  };
+
+  const inactive = createGlobalAudioController({ audio, button, config: { src: "" } });
+  assert.equal(inactive.enabled, false);
+  assert.equal(button.hidden, true);
+
+  const controller = createGlobalAudioController({
+    audio,
+    button,
+    config: { src: "./assets/audio/ambient.mp3", label: "Ambient soundscape", volume: 0.35 },
+  });
+  assert.equal(controller.enabled, true);
+  assert.equal(button.hidden, false);
+  assert.equal(audio.src, "./assets/audio/ambient.mp3");
+  assert.equal(audio.loop, true);
+  assert.equal(audio.volume, 0.35);
+  assert.equal(button.textContent, "Sound on");
+
+  await controller.toggle();
+  assert.equal(audio.playCalls, 1);
+  assert.equal(button.textContent, "Sound off");
+  assert.equal(attributes.get("aria-pressed"), "true");
+
+  await controller.toggle();
+  assert.equal(audio.pauseCalls, 1);
+  assert.equal(button.textContent, "Sound on");
+  assert.equal(attributes.get("aria-pressed"), "false");
+});
+
+test("global audio configuration and controls are present but inactive by default", async () => {
+  const data = await import("../data.js");
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+
+  assert.deepEqual(data.globalAudio, {
+    src: "",
+    label: "Ambient soundscape",
+    volume: 0.35,
+  });
+  assert.match(html, /id="global-audio"/);
+  assert.match(html, /id="sound-toggle"/);
+});
 
 test("the narrative contains six ordered species", () => {
   assert.equal(species.length, 6);

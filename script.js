@@ -1,5 +1,6 @@
-import { species, recentExtinctions } from "./data.js";
+import { globalAudio, species, recentExtinctions } from "./data.js";
 import { stories } from "./story-content.js";
+import { initGlobalAudio } from "./global-audio.js";
 import { createStoryDialogController } from "./story-dialog.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 import { syncHabitatVideos } from "./media.js";
@@ -293,6 +294,7 @@ function init() {
   document.getElementById("chapters").innerHTML = renderChapters(species);
   document.getElementById("ending-items").innerHTML = renderEndingItems(recentExtinctions);
   state.storyDialog = initStoryDialog();
+  initGlobalAudio(document, globalAudio);
 
   const motionToggle = document.getElementById("motion-toggle");
   motionToggle?.setAttribute("aria-pressed", String(state.reduceMotion));

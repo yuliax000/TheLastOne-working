@@ -6,6 +6,7 @@
  * - blocks 可以自由增删和排序。
  * - image.size: "wide" | "medium" | "small"
  * - image.align: "left" | "right" | "center"
+ * - media.mediaType: "image" | "video" | "audio"
  * - imageText.imageSide: "left" | "right"
  * - 图片路径、说明或来源暂时没有内容时保留空字符串 ""。
  */
@@ -48,7 +49,7 @@ export const stories = [
       { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
       { type: "paragraph", text: LOREM_WRAP_RIGHT },
       { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
+      { type: "media", mediaType: "image", src: "", poster: "", alt: "", caption: "Media placeholder 3 · centered feature media", credit: "Add media credit here", size: "medium", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [{ label: "在这里填写资料名称", url: "" }], // 资料来源，可增删
   },
@@ -85,7 +86,7 @@ export const stories = [
       { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
       { type: "paragraph", text: LOREM_WRAP_RIGHT },
       { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
+      { type: "media", mediaType: "image", src: "", poster: "", alt: "", caption: "Media placeholder 3 · centered feature media", credit: "Add media credit here", size: "medium", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -122,7 +123,7 @@ export const stories = [
       { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
       { type: "paragraph", text: LOREM_WRAP_RIGHT },
       { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
+      { type: "media", mediaType: "image", src: "", poster: "", alt: "", caption: "Media placeholder 3 · centered feature media", credit: "Add media credit here", size: "medium", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -159,7 +160,7 @@ export const stories = [
       { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
       { type: "paragraph", text: LOREM_WRAP_RIGHT },
       { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
+      { type: "media", mediaType: "image", src: "", poster: "", alt: "", caption: "Media placeholder 3 · centered feature media", credit: "Add media credit here", size: "medium", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -196,7 +197,7 @@ export const stories = [
       { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
       { type: "paragraph", text: LOREM_WRAP_RIGHT },
       { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
+      { type: "media", mediaType: "image", src: "", poster: "", alt: "", caption: "Media placeholder 3 · centered feature media", credit: "Add media credit here", size: "medium", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
@@ -233,7 +234,7 @@ export const stories = [
       { type: "image", src: "", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
       { type: "paragraph", text: LOREM_WRAP_RIGHT },
       { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "", alt: "", caption: "Image placeholder 3 · wide feature image", credit: "Add image credit here", size: "wide", align: "center", aspectRatio: "16 / 9" },
+      { type: "media", mediaType: "image", src: "", poster: "", alt: "", caption: "Media placeholder 3 · centered feature media", credit: "Add media credit here", size: "medium", align: "center", aspectRatio: "16 / 9" },
     ],
     sources: [], // 资料来源，可增删
   },
