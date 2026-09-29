@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { species } from "../data.js";
 import { stories } from "../story-content.js";
@@ -143,4 +144,27 @@ test("dialog navigation state exposes adjacent stories and disabled boundaries",
     next: null,
   });
   assert.equal(typeof createStoryDialogController, "function");
+});
+
+test("magazine stylesheet defines the complete responsive editorial contract", () => {
+  const css = readFileSync(new URL("../story-styles.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.story-dialog\s*\{/);
+  assert.match(css, /\.story-dialog__scroller\s*\{[^}]*overflow-y:\s*auto/s);
+  assert.match(css, /\.is-story-dialog-open\s*\{/);
+  assert.match(css, /\.story-reader__body\s*\{[^}]*display:\s*grid/s);
+  for (const size of ["wide", "medium", "small"]) {
+    assert.match(css, new RegExp(`\\.story-block--size-${size}\\s*\\{`));
+  }
+  for (const alignment of ["left", "right", "center"]) {
+    assert.match(css, new RegExp(`\\.story-block--align-${alignment}\\s*\\{`));
+  }
+  for (const side of ["left", "right"]) {
+    assert.match(css, new RegExp(`\\.story-block--image-side-${side}(?:\\s*\\{|\\s+\\.)`));
+  }
+  assert.match(css, /aspect-ratio:\s*var\(--media-aspect/);
+  assert.match(css, /overflow-wrap:\s*anywhere/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)/);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.doesNotMatch(css, /float\s*:/);
 });
