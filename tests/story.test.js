@@ -57,7 +57,6 @@ test("each story adds a third wrapped image before the centered feature media", 
     assert.equal(images[1].align, "right");
     assert.equal(images[2].size, "small");
     assert.equal(images[2].align, "left");
-    assert.match(images[2].caption, /placeholder 3/i);
     const thirdImageIndex = story.blocks.indexOf(images[2]);
     assert.equal(story.blocks[thirdImageIndex + 1]?.type, "paragraph");
     assert.equal(finalBlock.type, "media");
@@ -114,15 +113,27 @@ test("loaded story images keep their intrinsic aspect ratio without cropping", (
   assert.doesNotMatch(css, /\.story-media__image,\s*\.story-media__video\s*\{[^}]*height:\s*100%/s);
 });
 
-test("Macaulay Library iframe code is parsed without injecting raw HTML", () => {
+test("HTTPS iframe embeds from multiple providers are parsed without injecting raw HTML", () => {
   const embedCode = `<iframe src="https://macaulaylibrary.org/asset/228099/embed" height="300" width="640" frameborder="0" allowfullscreen></iframe>`;
   assert.deepEqual(parseEmbedCode(embedCode), {
     src: "https://macaulaylibrary.org/asset/228099/embed",
     width: 640,
     height: 300,
+    title: "",
     allowFullscreen: true,
   });
-  assert.equal(parseEmbedCode(`<iframe src="https://example.com/embed"></iframe>`), null);
+  assert.deepEqual(
+    parseEmbedCode(`<iframe src="https://www.youtube.com/embed/abc123" title="YouTube video"></iframe>`),
+    {
+      src: "https://www.youtube.com/embed/abc123",
+      width: null,
+      height: null,
+      title: "YouTube video",
+      allowFullscreen: false,
+    },
+  );
+  assert.equal(parseEmbedCode(`<iframe src="http://example.com/embed"></iframe>`), null);
+  assert.equal(parseEmbedCode(`<iframe src="javascript:alert(1)"></iframe>`), null);
   assert.equal(parseEmbedCode(`<script>alert(1)</script>`), null);
 
   const normalized = normalizeBlock({

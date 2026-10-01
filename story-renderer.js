@@ -39,11 +39,7 @@ export function parseEmbedCode(value) {
   } catch {
     return null;
   }
-  if (
-    url.protocol !== "https:" ||
-    url.hostname !== "macaulaylibrary.org" ||
-    !/^\/asset\/\d+\/embed\/?$/.test(url.pathname)
-  ) {
+  if (url.protocol !== "https:" || url.username || url.password) {
     return null;
   }
 
@@ -55,6 +51,7 @@ export function parseEmbedCode(value) {
     src: url.href.replace(/\/$/, ""),
     width: positiveDimension("width"),
     height: positiveDimension("height"),
+    title: attribute("title"),
     allowFullscreen: /\ballowfullscreen(?:\s|=|>)/i.test(iframeTag),
   };
 }
@@ -209,7 +206,7 @@ export function createStoryMedia(documentRef, mediaData = {}) {
 
   if (embed) {
     const iframe = element(documentRef, "iframe", "story-media__embed");
-    iframe.title = media.title || media.alt || "Embedded media";
+    iframe.title = media.title || embed.title || media.alt || "Embedded media";
     iframe.src = embed.src;
     iframe.loading = "lazy";
     iframe.allowFullscreen = embed.allowFullscreen;

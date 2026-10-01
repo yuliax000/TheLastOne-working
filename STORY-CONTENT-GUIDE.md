@@ -149,7 +149,9 @@ align: "center"
 },
 ```
 
-不要把 iframe 放进 `src`。完整代码应放在 `embedCode`，并使用 `` ` `` 而不是普通双引号包住。当前只接受 `https://macaulaylibrary.org/asset/数字/embed` 形式的官方播放器地址。关闭或切换故事时，播放器会停止。
+不要把 iframe 放进 `src`。完整代码应放在 `embedCode`，并使用 `` ` `` 而不是普通双引号包住。支持 YouTube、Vimeo、Macaulay Library 及其他使用 `https://` 且允许 iframe 嵌入的网站。出于安全考虑，`http://`、`javascript:` 和 `data:` 地址不会载入。关闭或切换故事时，播放器会停止。
+
+有些网站会通过自己的安全设置禁止 iframe 嵌入；遇到这种情况，即使链接正确，浏览器也可能显示空白或拒绝连接。需要改用该网站提供的官方 Embed / Share 代码。
 
 如果路径为空、文件加载失败或 Embed 代码无效，网页会显示对应的占位区域。
 

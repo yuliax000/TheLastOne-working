@@ -9,7 +9,6 @@ const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
   activeId: species[0].id,
   observer: null,
-  reduceMotion: localStorage.getItem("the-last-one-motion") === "reduce",
   storyDialog: null,
 };
 
@@ -148,7 +147,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
     if (activeChapter === chapter) return;
     document.body.classList.add("is-story-active");
     setActiveSpecies(chapter.dataset.species);
-    syncHabitatVideos(chapters, state.reduceMotion ? null : chapter.dataset.species);
+    syncHabitatVideos(chapters, reduceMotion ? null : chapter.dataset.species);
     const card = chapter.querySelector(".species-card");
     const habitat = chapter.querySelector(".chapter__habitat");
     const veil = chapter.querySelector(".chapter__veil");
@@ -236,8 +235,8 @@ export function initGsapAnimations() {
 
   gsap.registerPlugin(ScrollTrigger);
   document.body.classList.add("has-gsap");
-  initPinnedChapters(gsap, ScrollTrigger, state.reduceMotion);
-  initEndingSequence(gsap, ScrollTrigger, state.reduceMotion);
+  initPinnedChapters(gsap, ScrollTrigger, false);
+  initEndingSequence(gsap, ScrollTrigger, false);
 
   return true;
 }
@@ -247,7 +246,7 @@ function bindEvents() {
     const timelineButton = event.target.closest(".timeline__button");
     if (timelineButton) {
       document.getElementById(timelineButton.dataset.target)?.scrollIntoView({
-        behavior: state.reduceMotion ? "auto" : "smooth",
+        behavior: "smooth",
         block: "center",
       });
       return;
@@ -259,12 +258,6 @@ function bindEvents() {
       return;
     }
 
-    const motionToggle = event.target.closest("#motion-toggle");
-    if (motionToggle) {
-      const reduce = !state.reduceMotion;
-      localStorage.setItem("the-last-one-motion", reduce ? "reduce" : "full");
-      window.location.reload();
-    }
   });
 }
 
@@ -273,7 +266,7 @@ function initStoryDialog() {
   const scroller = document.getElementById("story-dialog-scroller");
   const content = document.getElementById("story-dialog-content");
   if (!dialog || !scroller || !content) return null;
-  const reducedMotion = state.reduceMotion || motionQuery.matches;
+  const reducedMotion = motionQuery.matches;
   return createStoryDialogController({
     dialog,
     scroller,
@@ -282,9 +275,7 @@ function initStoryDialog() {
     reducedMotion,
     onOpen: () => syncHabitatVideos(document.querySelectorAll(".chapter"), null),
     onClose: () => {
-      if (!state.reduceMotion) {
-        syncHabitatVideos(document.querySelectorAll(".chapter"), state.activeId);
-      }
+      syncHabitatVideos(document.querySelectorAll(".chapter"), state.activeId);
     },
   });
 }
@@ -296,10 +287,6 @@ function init() {
   state.storyDialog = initStoryDialog();
   initGlobalAudio(document, globalAudio);
 
-  const motionToggle = document.getElementById("motion-toggle");
-  motionToggle?.setAttribute("aria-pressed", String(state.reduceMotion));
-  if (motionToggle) motionToggle.textContent = state.reduceMotion ? "Enable motion" : "Reduce motion";
-  if (state.reduceMotion) document.body.classList.add("is-reduced-motion");
   bindEvents();
   if (!initGsapAnimations()) initChapterObservers();
   setActiveSpecies(species[0].id);

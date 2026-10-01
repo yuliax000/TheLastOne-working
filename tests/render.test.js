@@ -247,7 +247,7 @@ test("application module declares fallback and GSAP initializers", async () => {
   assert.match(source, /window\.gsap/);
   assert.match(source, /prefers-reduced-motion/);
   assert.doesNotMatch(source, /!ScrollTrigger \|\| motionQuery\.matches/);
-  assert.match(source, /initPinnedChapters\(gsap, ScrollTrigger, state\.reduceMotion\)/);
+  assert.match(source, /initPinnedChapters\(gsap, ScrollTrigger, false\)/);
 });
 
 test("animated chapters use a fixed stage and scroll-driven card switching", async () => {
@@ -308,16 +308,16 @@ test("GSAP mode avoids a duplicate chapter observer", async () => {
   assert.doesNotMatch(source, /initChapterObservers\(\);\s*initGsapAnimations\(\);/);
 });
 
-test("motion is on by default and can be reduced with an explicit control", async () => {
+test("main motion is always enabled without a visitor-facing reduction control", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const source = await readFile(new URL("../script.js", import.meta.url), "utf8");
 
-  assert.match(html, /id="motion-toggle"/);
-  assert.match(html, /aria-pressed="false"/);
-  assert.match(source, /localStorage\.getItem\("the-last-one-motion"\) === "reduce"/);
-  assert.match(source, /state\.reduceMotion/);
-  assert.doesNotMatch(source, /initPinnedChapters\(gsap, ScrollTrigger, motionQuery\.matches\)/);
-  assert.doesNotMatch(source, /initEndingSequence\(gsap, ScrollTrigger, motionQuery\.matches\)/);
+  assert.doesNotMatch(html, /id="motion-toggle"/);
+  assert.doesNotMatch(source, /the-last-one-motion/);
+  assert.doesNotMatch(source, /state\.reduceMotion/);
+  assert.match(source, /initPinnedChapters\(gsap, ScrollTrigger, false\)/);
+  assert.match(source, /initEndingSequence\(gsap, ScrollTrigger, false\)/);
+  assert.match(source, /const reducedMotion = motionQuery\.matches/);
 });
 
 test("the ending links to a six-species reference page", async () => {
