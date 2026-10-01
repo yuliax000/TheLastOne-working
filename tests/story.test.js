@@ -46,13 +46,18 @@ test("all visitor-facing story placeholders are English", () => {
   assert.equal(normalizeStory({}).introduction, "Add introduction here");
 });
 
-test("each story ends with a centered medium media block after two wrapped images", () => {
+test("each story adds a third wrapped image before the centered feature media", () => {
   for (const story of stories) {
     const images = story.blocks.filter((block) => block.type === "image");
     const finalBlock = story.blocks.at(-1);
-    assert.equal(images.length, 2, `${story.id} should contain two wrapped image blocks`);
-    assert.ok(images.some((image) => image.size === "small" && image.align === "left"));
-    assert.ok(images.some((image) => image.size === "small" && image.align === "right"));
+    assert.equal(images.length, 3, `${story.id} should contain three wrapped image blocks`);
+    assert.equal(images[0].align, "left");
+    assert.equal(images[1].align, "right");
+    assert.equal(images[2].size, "small");
+    assert.equal(images[2].align, "left");
+    assert.match(images[2].caption, /placeholder 3/i);
+    const thirdImageIndex = story.blocks.indexOf(images[2]);
+    assert.equal(story.blocks[thirdImageIndex + 1]?.type, "paragraph");
     assert.equal(finalBlock.type, "media");
     assert.equal(finalBlock.mediaType, "image");
     assert.equal(finalBlock.size, "medium");
