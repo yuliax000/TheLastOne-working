@@ -109,7 +109,7 @@ test("renderers include navigation, chapter controls, and ending cards", () => {
     6,
   );
   assert.equal(
-    (chapters.match(/species-card__portrait/g) || []).length,
+    (chapters.match(/class="species-card__portrait"/g) || []).length,
     6,
   );
   assert.match(chapters, /data-story-id="great-auk"/);
@@ -119,6 +119,14 @@ test("renderers include navigation, chapter controls, and ending cards", () => {
       .length,
     recentExtinctions.length,
   );
+});
+
+test("empty homepage media keeps accessible labels without visible placeholder copy", () => {
+  const chapters = renderChapters(species);
+  const ending = renderEndingItems(recentExtinctions);
+  assert.match(chapters, /aria-label="North Atlantic cliffs · habitat image placeholder"/);
+  assert.doesNotMatch(chapters, />\s*[^<]*placeholder[^<]*</i);
+  assert.doesNotMatch(ending, /IMAGE PLACEHOLDER/i);
 });
 
 test("dynamic content is escaped", () => {
@@ -133,13 +141,44 @@ test("chapters render optional habitat video only when a path is provided", () =
     ...species[0],
     habitatVideo: "./assets/video/auk-habitat.mp4",
   };
-  const html = renderChapters([withMedia, species[1]]);
+  const withoutMedia = {
+    ...species[1],
+    habitatVideo: "",
+  };
+  const html = renderChapters([withMedia, withoutMedia]);
   const first = html.split('id="species-passenger-pigeon"')[0];
   const second = html.split('id="species-passenger-pigeon"')[1];
 
   assert.match(first, /<video[^>]*data-habitat-video[^>]*muted[^>]*loop[^>]*playsinline/s);
   assert.match(first, /src="\.\/assets\/video\/auk-habitat\.mp4"/);
   assert.doesNotMatch(second, /data-habitat-video/);
+});
+
+test("chapter portraits support configurable image crop with a safe placeholder fallback", () => {
+  const html = renderChapters([
+    {
+      ...species[0],
+      portraitImage: "./assets/images/great-auk-landscape.jpg",
+      portraitFit: "contain",
+      portraitPosition: "25% center",
+    },
+    { ...species[1], portraitImage: "" },
+  ]);
+  const first = html.split('id="species-passenger-pigeon"')[0];
+  const second = html.split('id="species-passenger-pigeon"')[1];
+
+  assert.match(first, /class="species-card__portrait-image"/);
+  assert.match(first, /src="\.\/assets\/images\/great-auk-landscape\.jpg"/);
+  assert.match(first, /--portrait-fit:\s*contain/);
+  assert.match(first, /--portrait-position:\s*25% center/);
+  assert.match(first, /onerror="this\.hidden=true"/);
+  assert.match(first, /aria-label="Great Auk · species portrait placeholder"/);
+  assert.doesNotMatch(second, /species-card__portrait-image/);
+
+  const unsafe = renderChapters([{ ...species[0], portraitImage: 'x" onerror="alert(1)', portraitFit: "bad", portraitPosition: "left; color: red" }]);
+  assert.doesNotMatch(unsafe, /onerror="alert/);
+  assert.match(unsafe, /--portrait-fit:\s*cover/);
+  assert.match(unsafe, /--portrait-position:\s*center center/);
 });
 
 test("media paths are escaped before insertion into HTML", () => {

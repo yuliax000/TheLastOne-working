@@ -1,5 +1,12 @@
 import { createStoryArticle, getAdjacentStory } from "./story-renderer.js";
 
+export function stopStoryMedia(root) {
+  root.querySelectorAll("audio, video").forEach((media) => media.pause());
+  root.querySelectorAll("iframe[data-story-embed]").forEach((iframe) => {
+    iframe.src = "about:blank";
+  });
+}
+
 export function getStoryNavigationState(items, activeId) {
   const activeIndex = items.findIndex((story) => story.id === activeId);
   if (activeIndex < 0) return { activeIndex: -1, previous: null, next: null };
@@ -77,7 +84,7 @@ export function createStoryDialogController({
   function cleanup() {
     if (cleanedUp) return;
     cleanedUp = true;
-    dialog.querySelectorAll("audio, video").forEach((media) => media.pause());
+    stopStoryMedia(dialog);
     documentRef.body.classList.remove("is-story-dialog-open");
     documentRef.body.style.top = "";
     windowRef.scrollTo(0, savedScrollY);

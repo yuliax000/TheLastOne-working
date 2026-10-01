@@ -7,6 +7,18 @@ export function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+export function normalizePortraitFit(value) {
+  return value === "contain" ? "contain" : "cover";
+}
+
+export function normalizePortraitPosition(value) {
+  const position = String(value || "center center").trim();
+  const token = "(?:left|center|right|top|bottom|(?:100|[0-9]{1,2})(?:\\.[0-9]+)?%)";
+  return new RegExp(`^${token}(?:\\s+${token})?$`, "i").test(position)
+    ? position
+    : "center center";
+}
+
 export function renderTimeline(items) {
   return items
     .map(
@@ -39,7 +51,7 @@ export function renderChapters(items) {
           aria-labelledby="title-${escapeHtml(item.id)}"
         >
           <div class="chapter__habitat" role="img" aria-label="${escapeHtml(item.habitatLabel)}">
-            ${item.habitatVideo ? `<video data-habitat-video muted loop playsinline preload="none" src="${escapeHtml(item.habitatVideo)}" aria-hidden="true"></video>` : `<p class="media-placeholder">${escapeHtml(item.habitatLabel)}</p>`}
+            ${item.habitatVideo ? `<video data-habitat-video muted loop playsinline preload="none" src="${escapeHtml(item.habitatVideo)}" aria-hidden="true"></video>` : `<div class="media-placeholder" aria-hidden="true"></div>`}
           </div>
           <div class="chapter__veil" aria-hidden="true"></div>
           <article class="species-card" data-species-card>
@@ -47,8 +59,13 @@ export function renderChapters(items) {
               <span>${escapeHtml(item.index)} / 06</span>
               <span>${escapeHtml(item.location)}</span>
             </div>
-            <div class="species-card__portrait" role="img" aria-label="${escapeHtml(item.portraitLabel)}">
-              <span>${escapeHtml(item.portraitLabel)}</span>
+            <div
+              class="species-card__portrait"
+              role="img"
+              aria-label="${escapeHtml(item.portraitLabel)}"
+              style="--portrait-fit: ${normalizePortraitFit(item.portraitFit)}; --portrait-position: ${escapeHtml(normalizePortraitPosition(item.portraitPosition))}"
+            >
+              ${item.portraitImage ? `<img class="species-card__portrait-image" src="${escapeHtml(item.portraitImage)}" alt="${escapeHtml(item.portraitLabel)}" onerror="this.hidden=true" />` : ""}
             </div>
             <p class="species-card__year">${escapeHtml(item.year)}</p>
             <h2 id="title-${escapeHtml(item.id)}">${escapeHtml(item.name)}</h2>
@@ -71,9 +88,7 @@ export function renderEndingItems(items) {
     .map(
       (item) => `
         <article class="ending-card" data-ending-item data-ending-id="${escapeHtml(item.id)}">
-          <div class="ending-card__image" aria-hidden="true">
-            <span>IMAGE PLACEHOLDER</span>
-          </div>
+          <div class="ending-card__image" aria-hidden="true"></div>
           <div class="ending-card__caption">
             <p class="ending-card__year">${escapeHtml(item.year)}</p>
             <h3>${escapeHtml(item.name)}</h3>

@@ -3,7 +3,7 @@ import { stories } from "./story-content.js";
 const IMAGE_SIZES = new Set(["wide", "medium", "small"]);
 const IMAGE_ALIGNMENTS = new Set(["left", "right", "center"]);
 const IMAGE_SIDES = new Set(["left", "right"]);
-const MEDIA_TYPES = new Set(["image", "video", "audio"]);
+const MEDIA_TYPES = new Set(["image", "video", "audio", "embed"]);
 const BLOCK_TYPES = new Set(["paragraph", "subheading", "image", "media", "imageText", "quote", "divider"]);
 
 const PLACEHOLDER_TRANSLATIONS = new Map([
@@ -23,9 +23,52 @@ const PLACEHOLDER_TRANSLATIONS = new Map([
   ["在这里填写资料名称", "Add source title here"],
 ]);
 
+export function parseEmbedCode(value) {
+  if (typeof value !== "string") return null;
+  const iframeTag = value.match(/<iframe\b[^>]*>/i)?.[0];
+  if (!iframeTag) return null;
+
+  const attribute = (name) => {
+    const match = iframeTag.match(new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, "i"));
+    return match?.[2]?.trim() || "";
+  };
+  const src = attribute("src").replaceAll("&amp;", "&");
+  let url;
+  try {
+    url = new URL(src);
+  } catch {
+    return null;
+  }
+  if (
+    url.protocol !== "https:" ||
+    url.hostname !== "macaulaylibrary.org" ||
+    !/^\/asset\/\d+\/embed\/?$/.test(url.pathname)
+  ) {
+    return null;
+  }
+
+  const positiveDimension = (name) => {
+    const number = Number.parseInt(attribute(name), 10);
+    return Number.isFinite(number) && number > 0 ? number : null;
+  };
+  return {
+    src: url.href.replace(/\/$/, ""),
+    width: positiveDimension("width"),
+    height: positiveDimension("height"),
+    allowFullscreen: /\ballowfullscreen(?:\s|=|>)/i.test(iframeTag),
+  };
+}
+
 function text(value, fallback = "") {
   const resolved = typeof value === "string" ? value : fallback;
   return PLACEHOLDER_TRANSLATIONS.get(resolved) || resolved;
+}
+
+function visibleMediaText(value) {
+  const resolved = text(value).trim();
+  return /^(?:(?:image|media) placeholder\b|add (?:image|media) (?:caption|credit) here$)/i.test(resolved)
+    ? ""
+    : resolved;
 }
 
 export function normalizeAspectRatio(value) {
@@ -40,8 +83,8 @@ function normalizeMedia(media = {}) {
     src: text(media.src),
     poster: text(media.poster),
     alt: text(media.alt),
-    caption: text(media.caption),
-    credit: text(media.credit),
+    caption: visibleMediaText(media.caption),
+    credit: visibleMediaText(media.credit),
     aspectRatio: normalizeAspectRatio(media.aspectRatio),
   };
 }
@@ -78,6 +121,8 @@ export function normalizeBlock(block) {
     return {
       type: "media",
       mediaType: MEDIA_TYPES.has(block.mediaType) ? block.mediaType : "image",
+      embedCode: text(block.embedCode),
+      title: text(block.title),
       ...normalizeMedia(block),
       size: IMAGE_SIZES.has(block.size) ? block.size : "medium",
       align: IMAGE_ALIGNMENTS.has(block.align) ? block.align : "center",
@@ -145,31 +190,40 @@ function isSafeLink(value) {
 export function createStoryMedia(documentRef, mediaData = {}) {
   const media = {
     mediaType: MEDIA_TYPES.has(mediaData.mediaType) ? mediaData.mediaType : "image",
+    embedCode: text(mediaData.embedCode),
+    title: text(mediaData.title),
     ...normalizeMedia(mediaData),
   };
+  const embed = media.mediaType === "embed" ? parseEmbedCode(media.embedCode) : null;
   const mediaLabel = media.mediaType === "image" ? "image" : media.mediaType;
   const figure = element(documentRef, "figure", "story-media");
   const frame = element(documentRef, "div", "story-media__frame is-placeholder");
-  frame.style.aspectRatio = media.mediaType === "audio" ? "auto" : media.aspectRatio;
+  const embedRatio = embed?.width && embed?.height ? `${embed.width} / ${embed.height}` : media.aspectRatio;
+  frame.style.aspectRatio = media.mediaType === "audio" ? "auto" : embedRatio;
   frame.dataset.mediaType = media.mediaType;
 
   const placeholder = element(documentRef, "div", "story-media__placeholder");
   placeholder.setAttribute("role", media.mediaType === "image" ? "img" : "status");
   placeholder.setAttribute("aria-label", media.alt || `Place ${mediaLabel} here`);
-  placeholder.append(
-    element(documentRef, "span", "story-media__placeholder-title", `Place ${mediaLabel} here`),
-    element(
-      documentRef,
-      "span",
-      "story-media__placeholder-ratio",
-      media.mediaType === "audio"
-        ? "Add an MP3, WAV or OGG file"
-        : `Suggested ratio ${media.aspectRatio.replaceAll(" ", "")}`,
-    ),
-  );
   frame.append(placeholder);
 
-  if (media.src) {
+  if (embed) {
+    const iframe = element(documentRef, "iframe", "story-media__embed");
+    iframe.title = media.title || media.alt || "Embedded media";
+    iframe.src = embed.src;
+    iframe.loading = "lazy";
+    iframe.allowFullscreen = embed.allowFullscreen;
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.setAttribute("data-story-embed", "");
+    iframe.setAttribute("frameborder", "0");
+    iframe.addEventListener("load", () => {
+      frame.classList.remove("is-placeholder");
+      frame.classList.add("is-loaded");
+    });
+    frame.append(iframe);
+  }
+
+  if (media.src && media.mediaType !== "embed") {
     const mediaElement = element(documentRef, media.mediaType === "image" ? "img" : media.mediaType, `story-media__${media.mediaType}`);
     mediaElement.hidden = true;
     if (media.mediaType === "image") mediaElement.alt = media.alt;
@@ -185,6 +239,7 @@ export function createStoryMedia(documentRef, mediaData = {}) {
     }
     const readyEvent = media.mediaType === "image" ? "load" : "loadedmetadata";
     mediaElement.addEventListener(readyEvent, () => {
+      if (media.mediaType === "image") frame.style.aspectRatio = "auto";
       mediaElement.hidden = false;
       frame.classList.remove("is-placeholder");
       frame.classList.add("is-loaded");
@@ -266,16 +321,12 @@ export function createStoryArticle(documentRef, rawStory) {
 
   const header = element(documentRef, "header", "story-reader__header");
   const eyebrow = element(documentRef, "p", "story-reader__eyebrow");
-  eyebrow.append(
-    element(documentRef, "span", "story-reader__chapter", `Story ${story.chapter}`),
-    element(documentRef, "span", "story-reader__year", story.year),
-  );
-  const heading = element(documentRef, "h1", "story-reader__title", story.title);
-  heading.id = "story-dialog-title";
-  heading.tabIndex = -1;
-  header.append(eyebrow, heading);
+  eyebrow.append(element(documentRef, "span", "story-reader__year", story.year));
+  header.append(eyebrow);
   if (story.englishName || story.scientificName) {
-    const names = element(documentRef, "p", "story-reader__names");
+    const names = element(documentRef, "h1", "story-reader__names");
+    names.id = "story-dialog-title";
+    names.tabIndex = -1;
     if (story.englishName) names.append(element(documentRef, "span", "", story.englishName));
     if (story.scientificName) names.append(element(documentRef, "i", "", story.scientificName));
     header.append(names);

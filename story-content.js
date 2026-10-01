@@ -6,7 +6,8 @@
  * - blocks 可以自由增删和排序。
  * - image.size: "wide" | "medium" | "small"
  * - image.align: "left" | "right" | "center"
- * - media.mediaType: "image" | "video" | "audio"
+ * - media.mediaType: "image" | "video" | "audio" | "embed"
+ * - embed 可把网站提供的完整 iframe 粘贴进 embedCode（使用反引号）。
  * - imageText.imageSide: "left" | "right"
  * - 图片路径、说明或来源暂时没有内容时保留空字符串 ""。
  */

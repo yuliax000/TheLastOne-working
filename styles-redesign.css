@@ -18,6 +18,25 @@
 .has-gsap:not(.is-story-active) .chapter__habitat,.has-gsap:not(.is-story-active) .chapter__veil,.has-gsap:not(.is-story-active) .species-card{pointer-events:none}
 @media(max-width:760px){.has-gsap .chapter{min-height:100svh}.has-gsap .species-card{left:calc(var(--rail) + 12px);width:calc(100vw - var(--rail) - 28px);max-height:88svh}.has-gsap .species-card__portrait{min-height:32vh}}
 
+/* Configurable species-card hero images. The placeholder remains behind the
+   image so a missing or failed asset never collapses the card. */
+.species-card__portrait-image {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--portrait-fit, cover);
+  object-position: var(--portrait-position, center center);
+}
+
+.species-card__portrait::before { z-index: 1; pointer-events: none; }
+.species-card__portrait > span { z-index: 2; }
+.species-card__portrait-image:not([hidden]) + span {
+  padding: .35rem .5rem;
+  background: #11130fb3;
+}
+
 /* Friendlier archive treatment */
 :root{--ink:#1b1f1c;--bone:#eeeee6;--lichen:#ced8c3;--stone:#a7aca5;--taupe:#c1ad8c}
 body{background:#1b1f1c}

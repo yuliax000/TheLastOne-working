@@ -43,11 +43,11 @@ introduction: "在这里填写导语",
   credit: "在这里填写图片来源",
   size: "wide",
   align: "center",
-  aspectRatio: "16 / 9",
+  aspectRatio: "16 / 9", // 仅用于图片尚未载入时的空白区域
 },
 ```
 
-如果 `src` 为空、路径写错或文件加载失败，网页会显示“在这里放置图片”和建议比例，不会出现破损图片图标。`caption` 或 `credit` 留空时不会留下多余空白。
+图片载入后会保持文件本身的原始宽高比并完整显示，不会裁切。`aspectRatio` 只控制图片为空、尚未载入或加载失败时的空白区域比例。`caption` 或 `credit` 留空时不会留下多余空白。
 
 ## 4. 图片放置目录
 
@@ -110,14 +110,14 @@ align: "center"
 
 `imageSide` 可选 `"left"` 或 `"right"`。在手机上，两种都会自动变为图片在上、文字在下。
 
-## 7A. 将最后一个媒体替换成图片、视频或音频
+## 7A. 将最后一个媒体替换成图片、视频、音频或 Embed
 
 每篇故事最后一个区块使用通用 `media` 类型。默认是尺寸较克制的居中图片：
 
 ```js
 {
   type: "media",
-  mediaType: "image", // 可改为 "video" 或 "audio"
+  mediaType: "image", // 可改为 "video"、"audio" 或 "embed"
   src: "./assets/stories/file-name.jpg",
   poster: "", // 仅视频需要，可填写视频封面图路径
   alt: "在这里填写媒体内容描述",
@@ -133,7 +133,25 @@ align: "center"
 
 替换成音频时，将 `mediaType` 改为 `"audio"`，并把 MP3、WAV 或 OGG 文件放进 `assets/stories/` 或 `assets/audio/`。音频会显示播放器；`poster` 和 `aspectRatio` 对音频不起作用。
 
-如果路径为空或文件加载失败，网页会自动显示对应的 image、video 或 audio 占位区域。
+使用 Macaulay Library 提供的 Embed 时，可以直接复制完整 iframe。请使用反引号包住代码：
+
+```js
+{
+  type: "media",
+  mediaType: "embed",
+  embedCode: `<iframe src="https://macaulaylibrary.org/asset/228099/embed" height="300" width="640" frameborder="0" allowfullscreen></iframe>`,
+  title: "Kauaʻi ʻōʻō field recording",
+  caption: "在这里填写媒体说明",
+  credit: "在这里填写媒体来源",
+  size: "medium",
+  align: "center",
+  aspectRatio: "640 / 300",
+},
+```
+
+不要把 iframe 放进 `src`。完整代码应放在 `embedCode`，并使用 `` ` `` 而不是普通双引号包住。当前只接受 `https://macaulaylibrary.org/asset/数字/embed` 形式的官方播放器地址。关闭或切换故事时，播放器会停止。
+
+如果路径为空、文件加载失败或 Embed 代码无效，网页会显示对应的占位区域。
 
 ## 7B. 添加全局环境音
 

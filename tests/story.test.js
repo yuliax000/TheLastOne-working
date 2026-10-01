@@ -14,10 +14,12 @@ import {
   normalizeAspectRatio,
   normalizeBlock,
   normalizeStory,
+  parseEmbedCode,
 } from "../story-renderer.js";
 import {
   createStoryDialogController,
   getStoryNavigationState,
+  stopStoryMedia,
 } from "../story-dialog.js";
 
 const expectedIds = [
@@ -77,6 +79,76 @@ test("media blocks normalize image video and audio options safely", () => {
   assert.deepEqual(normalized.map((block) => block.mediaType), ["image", "video", "audio", "image"]);
   assert.equal(normalized[1].poster, "poster.jpg");
   assert.ok(normalized.every((block) => block.type === "media"));
+});
+
+test("editor placeholder captions and credits are not visitor-facing", () => {
+  const placeholder = normalizeBlock({
+    type: "image",
+    caption: "Image placeholder 1 · text wraps on the right",
+    credit: "Add image credit here",
+  });
+  const real = normalizeBlock({
+    type: "image",
+    caption: "A real archival photograph",
+    credit: "Museum collection",
+  });
+  assert.equal(placeholder.caption, "");
+  assert.equal(placeholder.credit, "");
+  assert.equal(real.caption, "A real archival photograph");
+  assert.equal(real.credit, "Museum collection");
+});
+
+test("empty story media uses an accessible but text-free placeholder", () => {
+  const source = readFileSync(new URL("../story-renderer.js", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /story-media__placeholder-title/);
+  assert.doesNotMatch(source, /story-media__placeholder-ratio/);
+  assert.match(source, /placeholder\.setAttribute\("aria-label"/);
+});
+
+test("loaded story images keep their intrinsic aspect ratio without cropping", () => {
+  const renderer = readFileSync(new URL("../story-renderer.js", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../story-styles.css", import.meta.url), "utf8");
+
+  assert.match(renderer, /if \(media\.mediaType === "image"\) frame\.style\.aspectRatio = "auto"/);
+  assert.match(css, /\.story-media__image\s*\{[^}]*height:\s*auto[^}]*object-fit:\s*contain/s);
+  assert.doesNotMatch(css, /\.story-media__image,\s*\.story-media__video\s*\{[^}]*height:\s*100%/s);
+});
+
+test("Macaulay Library iframe code is parsed without injecting raw HTML", () => {
+  const embedCode = `<iframe src="https://macaulaylibrary.org/asset/228099/embed" height="300" width="640" frameborder="0" allowfullscreen></iframe>`;
+  assert.deepEqual(parseEmbedCode(embedCode), {
+    src: "https://macaulaylibrary.org/asset/228099/embed",
+    width: 640,
+    height: 300,
+    allowFullscreen: true,
+  });
+  assert.equal(parseEmbedCode(`<iframe src="https://example.com/embed"></iframe>`), null);
+  assert.equal(parseEmbedCode(`<script>alert(1)</script>`), null);
+
+  const normalized = normalizeBlock({
+    type: "media",
+    mediaType: "embed",
+    embedCode,
+    title: "Kauaʻi ʻōʻō field recording",
+  });
+  assert.equal(normalized.mediaType, "embed");
+  assert.equal(normalized.embedCode, embedCode);
+  assert.equal(normalized.title, "Kauaʻi ʻōʻō field recording");
+});
+
+test("closing a story stops local media and unloads embedded players", () => {
+  let pauses = 0;
+  const iframe = { src: "https://macaulaylibrary.org/asset/228099/embed" };
+  const root = {
+    querySelectorAll(selector) {
+      if (selector === "audio, video") return [{ pause: () => { pauses += 1; } }];
+      if (selector === "iframe[data-story-embed]") return [iframe];
+      return [];
+    },
+  };
+  stopStoryMedia(root);
+  assert.equal(pauses, 1);
+  assert.equal(iframe.src, "about:blank");
 });
 
 test("renderer normalization keeps every supported editorial option available", () => {
@@ -152,6 +224,20 @@ test("shared story DOM builders are exported", () => {
   assert.equal(typeof createStoryMedia, "function");
 });
 
+test("Explore Story header omits the editorial title and story number", () => {
+  const source = readFileSync(new URL("../story-renderer.js", import.meta.url), "utf8");
+  const articleSource = source.slice(
+    source.indexOf("export function createStoryArticle"),
+    source.indexOf("export function", source.indexOf("export function createStoryArticle") + 1),
+  );
+
+  assert.doesNotMatch(articleSource, /Story \$\{story\.chapter\}/);
+  assert.doesNotMatch(articleSource, /story-reader__title/);
+  assert.doesNotMatch(articleSource, /story\.title/);
+  assert.match(articleSource, /story-dialog-title/);
+  assert.match(articleSource, /story\.englishName/);
+});
+
 test("story normalization preserves valid block order and empty optional media text", () => {
   const normalized = normalizeStory({
     id: "ordered",
@@ -207,6 +293,7 @@ test("magazine stylesheet defines the complete responsive editorial contract", (
     assert.match(css, new RegExp(`\\.story-block--image-side-${side}(?:\\s*\\{|\\s+\\.)`));
   }
   assert.match(css, /aspect-ratio:\s*var\(--media-aspect/);
+  assert.match(css, /\.story-media__embed\s*\{[^}]*width:\s*100%;[^}]*height:\s*100%/s);
   assert.match(css, /overflow-wrap:\s*anywhere/);
   assert.match(css, /@media\s*\(max-width:\s*760px\)/);
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
