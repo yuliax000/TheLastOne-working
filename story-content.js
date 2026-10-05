@@ -245,33 +245,33 @@ export const stories = [
     id: "pinta-tortoise", // 稳定故事 ID，请不要修改
     chapterId: "lonesome-george", // 对应首页章节 ID，请不要修改
     chapter: "06", // 章节编号
-    year: "在这里填写年份", // 故事标题区年份
+    year: "2012", // 故事标题区年份
     title: "在这里填写标题", // 杂志文章主标题
     englishName: "Pinta Island Tortoise", // 英文物种名称
-    scientificName: "在这里填写学名", // 学名
-    habitat: "在这里填写栖息地", // 栖息地
-    lastLocation: "在这里填写最后记录地点", // 最后记录地点
-    introduction: "在这里填写导语", // 标题下方的大号导语
+    scientificName: "Chelonoidis abingdonii", // 学名
+    habitat: "Dry and transitional vegetation of Pinta Island, Galápagos", // 栖息地
+    lastLocation: "Tortoise Breeding and Rearing Center, Puerto Ayora, Santa Cruz Island", // 最后记录地点
+    introduction: "Lonesome George survived for decades as the visible last member of his species. His life became a conservation story, but no amount of attention could supply the population that had already disappeared.", // 标题下方的大号导语
     accent: "#9b8c67", // 本篇强调色
     blocks: [
-      { type: "paragraph", text: LOREM_OPENING },
+      { type: "paragraph", text: "The Pinta Island tortoise evolved in isolation on one of the northern islands of the Galápagos. Like other giant tortoises, it shaped its environment as it moved: opening paths, disturbing vegetation, carrying seeds and redistributing nutrients. The tortoise was not simply an inhabitant of Pinta. It was part of the process that made the island’s ecosystem function." },
       {
         type: "image",
         src: "assets/stories/pinta-island-tortoise-distribution.jpg",
         alt: "",
-        caption: "Image placeholder 1 · text wraps on the right",
+        caption: "Pinta Island was the entire natural range of the Pinta giant tortoise.",
         credit: "Add image credit here",
         size: "small",
         align: "left",
         aspectRatio: "4 / 5",
       },
-      { type: "paragraph", text: LOREM_WRAP_LEFT },
-      { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "assets/stories/Pinta Island Tortoise_lonesome_george_photo 01.jpg", alt: "", caption: "Image placeholder 2 · text wraps on the left", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
-      { type: "paragraph", text: LOREM_WRAP_RIGHT },
-      { type: "paragraph", text: LOREM_FOLLOW },
-      { type: "image", src: "assets/stories/Pinta Island Tortoise_lonesome_george_photo02.jpg", alt: "", caption: "Image placeholder 3 · text wraps on the right", credit: "Add image credit here", size: "small", align: "left", aspectRatio: "4 / 5" },
-      { type: "paragraph", text: LOREM_WRAP_LEFT },
+      { type: "paragraph", text: "During the nineteenth century, sailors took giant tortoises for food and oil. Their ability to survive for long periods aboard ships made them especially vulnerable to collection. By the twentieth century, the Pinta population was thought to have disappeared." },
+      { type: "paragraph", text: "A second transformation followed in 1959, when fishermen released goats on Pinta as a future source of meat. Their population expanded dramatically. Goats consumed and altered the vegetation on which tortoises depended, leaving an island where even a surviving tortoise would have found its habitat profoundly changed."},
+      { type: "image", src: "assets/stories/Pinta Island Tortoise_lonesome_george_photo 01.jpg", alt: "", caption: "Lonesome George, the last known Pinta Island tortoise, in human care in the Galápagos.", credit: "Add image credit here", size: "small", align: "right", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: "In 1971, Hungarian scientist József Vágvölgyi encountered a living tortoise on Pinta. Park rangers transferred the animal to the Tortoise Center on Santa Cruz the following year. He became known as Lonesome George. Searches for another pure Pinta tortoise continued, but no mate of his own species was found." },
+      { type: "paragraph", text: "For decades, scientists tried to preserve George’s lineage. Breeding attempts with females from related populations did not produce surviving offspring. Meanwhile, conservation teams removed goats from Pinta and began restoring the island. The habitat could recover, but the return of the exact lineage George represented remained uncertain." },
+      { type: "image", src: "assets/stories/Pinta Island Tortoise_lonesome_george_photo02.jpg", alt: "", caption: "Lonesome George became a global symbol of extinction and the limits of last-minute conservation.", credit: "Add image credit here", size: "small", align: "left", aspectRatio: "4 / 5" },
+      { type: "paragraph", text: "On 24 June 2012, George was found dead in his enclosure at the Tortoise Breeding and Rearing Center in Puerto Ayora. He was estimated to be more than one hundred years old. Pinta no longer had its endemic tortoise, but restoration continued. His story ends with loss, while the work prompted by that loss continues elsewhere in the Galápagos." },
       {
         type: "media",
         mediaType: "embed",
@@ -280,7 +280,7 @@ export const stories = [
         title: "",
         embedCode: `<iframe width="1080" height="608" src="https://www.youtube.com/embed/lYROrqDOd80" title="Attenborough’s Last Encounter with Lonesome George" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`,
         alt: "",
-        caption: "",
+        caption: "Optional final image, video or audio reflecting Pinta’s restoration after Lonesome George.",
         credit: "",
         size: "medium",
         align: "center",

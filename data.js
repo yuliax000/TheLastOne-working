@@ -22,7 +22,7 @@ export const species = [
     scientificName: "Pinguinus impennis",
     location: "Eldey Island · North Atlantic",
     summary:
-      "On a low black island off Iceland, the final known breeding pair were killed within minutes of one another.",
+      "On a remote Icelandic island, the last known breeding pair were killed beside their single egg—ending centuries of life across the North Atlantic.",
     detail:
       "The Great Auk once gathered in immense colonies across the North Atlantic. Flightless and unafraid of people, it was taken for meat, feathers, oil and specimens until only a final pair remained on Eldey Island.",
     cause: "Hunting, egg collecting and commercial exploitation",
@@ -49,7 +49,7 @@ export const species = [
     scientificName: "Ectopistes migratorius",
     location: "Cincinnati · United States",
     summary:
-      "A bird once counted in billions ended with one individual, Martha, alone in a zoo enclosure.",
+      "A bird once counted in billions ended with Martha, alone at Cincinnati Zoo, after industrial hunting and forest loss dismantled its enormous flocks.",
     detail:
       "Passenger Pigeon flocks once darkened North American skies for hours. Industrial hunting and forest loss collapsed the vast social populations on which the species depended. Martha died at Cincinnati Zoo in 1914.",
     cause: "Commercial hunting and habitat loss",
@@ -75,7 +75,7 @@ export const species = [
     scientificName: "Thylacinus cynocephalus",
     location: "Hobart · Tasmania",
     summary:
-      "The last known captive thylacine paced behind wire while a species disappeared beyond the frame.",
+      "Hunted as a threat to livestock, the Thylacine received legal protection only weeks before the last known captive animal died in Hobart.",
     detail:
       "Persecution encouraged by a government bounty intensified the decline of Tasmania's largest marsupial predator. The final known captive animal died at Beaumaris Zoo, only weeks after legal protection began.",
     cause: "Bounty hunting, persecution and ecological pressure",
@@ -101,7 +101,7 @@ export const species = [
     scientificName: "Moho braccatus",
     location: "Alakaʻi Swamp · Kauaʻi",
     summary:
-      "A male bird called into the rainforest. The answering voice never came.",
+      "In Kauaʻi’s rain-soaked forest, a lone bird called for a mate. No answer came, but the recording of its voice remains.",
     detail:
       "The final confirmed recording captures a lone male calling for a mate. Habitat loss, invasive species, disease and severe storms had reduced the population until the forest held only one side of the duet.",
     cause: "Habitat loss, invasive species, disease and storms",
@@ -127,7 +127,7 @@ export const species = [
     scientificName: "Lipotes vexillifer",
     location: "Yangtze River · China",
     summary:
-      "A six-week survey crossed the Yangtze and returned without a single confirmed sighting.",
+      "Qiqi survived for decades in human care while the wild population disappeared. In 2006, a six-week Yangtze survey found no Baiji.",
     detail:
       "The Baiji evolved within the Yangtze for millions of years. Entanglement, vessel traffic, fishing pressure and river development transformed its habitat. The 2006 survey led researchers to declare it functionally extinct.",
     cause: "Bycatch, vessel traffic, fishing and river development",
@@ -153,7 +153,7 @@ export const species = [
     scientificName: "Chelonoidis abingdonii",
     location: "Pinta Island · Galápagos",
     summary:
-      "For decades, George carried the visible weight of being the last known member of his kind.",
+      "For forty years, Lonesome George lived as the last known Pinta tortoise—a visible reminder that protecting one individual cannot restore a vanished population.",
     detail:
       "Introduced goats devastated Pinta Island vegetation after earlier exploitation had reduced its tortoises. George became a global conservation symbol, but breeding attempts produced no surviving offspring.",
     cause: "Historic exploitation and introduced goats",
