@@ -289,8 +289,6 @@ test("animated chapters use a fixed stage and scroll-driven card switching", asy
   assert.match(css, /\.has-gsap \.chapter\s*\{[^}]*min-height:\s*100svh/s);
   assert.match(source, /ScrollTrigger\.create\(/);
   assert.match(source, /onEnterBack:\s*\(\)\s*=>\s*activateChapter/);
-  assert.match(source, /duration:\s*reduceMotion \? 0 : 0\.7/);
-  assert.match(source, /ease:\s*"power4\.out"/);
   assert.doesNotMatch(source, /start:\s*"top 78%"/);
   assert.doesNotMatch(source, /backdrop-filter:\s*blur/);
   assert.match(css, /transform:\s*scaleY\(var\(--timeline-progress\)\)/);
@@ -324,8 +322,6 @@ test("the first species crossfades in before later chapter trigger points", asyn
   const source = await readFile(new URL("../script.js", import.meta.url), "utf8");
 
   assert.match(source, /start:\s*index === 0 \? "top 80%" : "top center"/);
-  assert.match(source, /duration:\s*reduceMotion \? 0 : 0\.7/);
-  assert.match(source, /delay:\s*reduceMotion \? 0 : 0\.08/);
 });
 
 test("ending builds an accumulating photo field with a hopeful closing question", async () => {

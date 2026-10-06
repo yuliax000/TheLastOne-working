@@ -51,7 +51,7 @@ export function renderChapters(items) {
           aria-labelledby="title-${escapeHtml(item.id)}"
         >
           <div class="chapter__habitat" role="img" aria-label="${escapeHtml(item.habitatLabel)}">
-            ${item.habitatVideo ? `<video data-habitat-video muted loop playsinline preload="none" src="${escapeHtml(item.habitatVideo)}" aria-hidden="true"></video>` : `<div class="media-placeholder" aria-hidden="true"></div>`}
+            ${item.habitatVideo ? `<video data-habitat-video muted loop playsinline preload="metadata" src="${escapeHtml(item.habitatVideo)}" aria-hidden="true"></video>` : `<div class="media-placeholder" aria-hidden="true"></div>`}
           </div>
           <div class="chapter__veil" aria-hidden="true"></div>
           <article class="species-card" data-species-card>

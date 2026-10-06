@@ -3,8 +3,9 @@ import { stories } from "./story-content.js";
 import { initGlobalAudio } from "./global-audio.js";
 import { createStoryDialogController } from "./story-dialog.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
-import { syncHabitatVideos } from "./media.js";
+import { syncHabitatVideos, prepareHabitatVideo } from "./media.js?v=frame-ready-1";
 import { initIntroStartVisibility } from "./intro-start.js";
+import { chapterCopyMotion, chapterCardMotion, endingCardPose } from "./narrative-motion.js?v=straight-drop-1";
 
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
@@ -86,10 +87,14 @@ function initEndingSequence(gsap, ScrollTrigger, reduceMotion = false) {
   const yearElement = document.getElementById("ending-year");
   if (!ending || !cards.length || !steps.length || !next || !yearElement) return;
 
-  const duration = reduceMotion ? 0 : 0.32;
+  const duration = reduceMotion ? 0 : 0.5;
   let visibleCount = -1;
   let closingVisible = false;
-  gsap.set(cards, { autoAlpha: 0, scale: reduceMotion ? 1 : 0.96, y: reduceMotion ? 0 : 16 });
+  // Capture each CSS angle before applying entrance transforms (mobile uses 0).
+  const rotations = cards.map(card => Number(gsap.getProperty(card, "rotation")) || 0);
+  cards.forEach((card, index) => gsap.set(card, {
+    autoAlpha: 0, ...endingCardPose(index, false, reduceMotion, rotations[index]),
+  }));
   gsap.set(next, { autoAlpha: 0, y: reduceMotion ? 0 : 14 });
 
   const renderStep = (stepIndex) => {
@@ -100,12 +105,13 @@ function initEndingSequence(gsap, ScrollTrigger, reduceMotion = false) {
     if (revealCount !== visibleCount) {
       cards.forEach((card, index) => {
         const visible = index < revealCount;
+        // Leave accumulated photos still; animate only a changed card.
+        if (visible === (index < visibleCount)) return;
         gsap.to(card, {
           autoAlpha: visible ? (showClosing ? 0.24 : 1) : 0,
-          scale: visible ? 1 : (reduceMotion ? 1 : 0.96),
-          y: visible ? 0 : (reduceMotion ? 0 : 16),
-          duration,
-          ease: "power3.out",
+          ...endingCardPose(index, visible, reduceMotion, rotations[index]),
+          duration: visible ? duration : (reduceMotion ? 0 : .22),
+          ease: "sine.out",
           overwrite: true,
         });
       });
@@ -120,15 +126,16 @@ function initEndingSequence(gsap, ScrollTrigger, reduceMotion = false) {
       if (visibleCount > 0) {
         gsap.to(cards.slice(0, visibleCount), {
           opacity: showClosing ? 0.24 : 1,
-          duration,
-          overwrite: true,
+          duration: reduceMotion ? 0 : (showClosing ? 1.2 : .35),
+          overwrite: "auto",
         });
       }
       gsap.to(next, {
         autoAlpha: showClosing ? 1 : 0,
         y: showClosing ? 0 : 14,
-        duration,
-        ease: "power3.out",
+        duration: reduceMotion ? 0 : (showClosing ? 1.8 : .35),
+        delay: reduceMotion || !showClosing ? 0 : .2,
+        ease: "sine.inOut",
         overwrite: true,
       });
       closingVisible = showClosing;
@@ -151,24 +158,30 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
   const chapters = Array.from(document.querySelectorAll(".chapter"));
   if (!chapters.length) return;
   let activeChapter = null;
+  let backgroundChapter = null;
+  let backgroundRequest = 0;
+  const backgrounds = chapters.flatMap(chapter => [
+    chapter.querySelector(".chapter__habitat"), chapter.querySelector(".chapter__veil"),
+  ]);
+  const hideBackgrounds = () => {
+    backgroundRequest++;
+    backgroundChapter = null;
+    gsap.to(backgrounds, { autoAlpha: 0, duration: reduceMotion ? 0 : .25, overwrite: true });
+    syncHabitatVideos(chapters, null);
+  };
 
   const activateChapter = (chapter) => {
     if (activeChapter === chapter) return;
     document.body.classList.add("is-story-active");
     setActiveSpecies(chapter.dataset.species);
     state.audio?.setChapter(chapter.dataset.species);
-    syncHabitatVideos(chapters, reduceMotion ? null : chapter.dataset.species);
     const card = chapter.querySelector(".species-card");
     const habitat = chapter.querySelector(".chapter__habitat");
     const veil = chapter.querySelector(".chapter__veil");
 
     if (activeChapter) {
       gsap.to(
-        [
-          activeChapter.querySelector(".species-card"),
-          activeChapter.querySelector(".chapter__habitat"),
-          activeChapter.querySelector(".chapter__veil"),
-        ],
+        activeChapter.querySelector(".species-card"),
         {
           autoAlpha: 0,
           duration: reduceMotion ? 0 : 0.22,
@@ -178,28 +191,47 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
       );
     }
 
-    gsap.fromTo(
-      [habitat, veil],
-      { autoAlpha: 0 },
-      {
-        autoAlpha: 1,
-        duration: reduceMotion ? 0 : 0.7,
-        ease: "power4.out",
-        overwrite: true,
-      },
-    );
-    gsap.fromTo(
-      card,
-      { autoAlpha: 0, yPercent: reduceMotion ? -50 : -47 },
-      {
-        autoAlpha: 1,
-        yPercent: -50,
-        duration: reduceMotion ? 0 : 0.7,
-        delay: reduceMotion ? 0 : 0.08,
-        ease: "power4.out",
-        overwrite: true,
-      },
-    );
+    const request = ++backgroundRequest;
+    const video = chapter.querySelector("[data-habitat-video]");
+    const ready = reduceMotion ? Promise.resolve(true) : prepareHabitatVideo(video);
+    ready.then(() => {
+      if (request !== backgroundRequest || activeChapter !== chapter) {
+        if (activeChapter !== chapter && backgroundChapter !== chapter) video?.pause();
+        return;
+      }
+      gsap.killTweensOf(backgrounds);
+      chapters.forEach(other => {
+        if (other !== chapter && other !== backgroundChapter) {
+          gsap.set([other.querySelector(".chapter__habitat"), other.querySelector(".chapter__veil")], { autoAlpha: 0 });
+          other.querySelector("[data-habitat-video]")?.pause();
+        }
+      });
+      // Incoming sits above the fully opaque outgoing video, in either scroll
+      // direction. Do not fade both to transparency and expose the page base.
+      gsap.set([habitat, veil], { autoAlpha: 0, zIndex: 3 });
+      gsap.to([habitat, veil], {
+        autoAlpha: 1, duration: reduceMotion ? 0 : .45,
+        ease: "sine.inOut", overwrite: true,
+        onComplete: () => {
+          if (request !== backgroundRequest) return;
+          chapters.forEach(other => {
+            if (other !== chapter) gsap.set([
+              other.querySelector(".chapter__habitat"), other.querySelector(".chapter__veil"),
+            ], { autoAlpha: 0 });
+          });
+          gsap.set(habitat, { zIndex: 1 });
+          gsap.set(veil, { zIndex: 2 });
+          backgroundChapter = chapter;
+          const storyOpen = document.getElementById("story-dialog")?.open;
+          syncHabitatVideos(chapters, reduceMotion || storyOpen ? null : chapter.dataset.species);
+        },
+      });
+    });
+    const cardMotion = chapterCardMotion(reduceMotion);
+    gsap.fromTo(card, cardMotion.from, cardMotion.to);
+    const copy = card.querySelectorAll(".species-card__year, h2, .species-card__summary, .story-link");
+    const copyMotion = chapterCopyMotion(reduceMotion);
+    gsap.fromTo(copy, copyMotion.from, copyMotion.to);
     activeChapter = chapter;
   };
 
@@ -218,7 +250,8 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
       onEnterBack: () => activateChapter(chapter),
       onLeave: () => {
         if (index === chapters.length - 1) {
-          gsap.to([card, habitat, veil], { autoAlpha: 0, duration: 0.25, overwrite: true });
+          gsap.to(card, { autoAlpha: 0, duration: 0.25, overwrite: true });
+          hideBackgrounds();
           document.body.classList.remove("is-story-active");
           syncHabitatVideos(chapters, null);
           state.audio?.setChapter(null);
@@ -227,12 +260,13 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
       },
       onLeaveBack: () => {
         if (index === 0) {
-          gsap.to([card, habitat, veil], {
+          gsap.to(card, {
             autoAlpha: 0,
             duration: reduceMotion ? 0 : 0.4,
             ease: "power3.out",
             overwrite: true,
           });
+          hideBackgrounds();
           document.body.classList.remove("is-story-active");
           syncHabitatVideos(chapters, null);
           state.audio?.setChapter(null);
@@ -254,6 +288,8 @@ export function initGsapAnimations() {
   gsap.registerPlugin(ScrollTrigger);
   document.body.classList.add("has-gsap");
   initPinnedChapters(gsap, ScrollTrigger, false);
+  // Narrative motion is explicitly enabled for this project, independent of
+  // the browser's preference. Article-dialog accessibility stays separate.
   initEndingSequence(gsap, ScrollTrigger, false);
 
   return true;
