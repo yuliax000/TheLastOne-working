@@ -171,3 +171,22 @@ body{background:#1b1f1c}
   text-transform: none;
   color: #a5aaa2;
 }
+
+/* Opening loading screen: real ready-resource count, no forced waiting. */
+.is-loading,.is-loading body{overflow:hidden}
+.loading-page{display:none;position:fixed;inset:0;z-index:100;background:#171b18;color:var(--bone);place-items:center;padding:2rem;opacity:1;transition:opacity .45s ease}
+.is-loading .loading-page,.loading-page.is-leaving{display:grid}
+.loading-page.is-leaving{opacity:0;pointer-events:none}
+.loading-page[hidden]{display:none}
+.loading-page__content{width:min(100%,25rem);text-align:center}
+.loading-page__title{margin:0 0 2.4rem;font:400 clamp(2.6rem,8vw,4.5rem)/1 var(--display);letter-spacing:.02em}
+.loading-page__status{min-height:3.2em;margin:0 0 1.5rem;font-size:.88rem;line-height:1.6;color:var(--lichen)}
+.loading-page__progress{display:block;appearance:none;width:100%;height:2px;border:0;background:#ced8c32e;color:var(--lichen)}
+.loading-page__progress::-webkit-progress-bar{background:#ced8c32e}
+.loading-page__progress::-webkit-progress-value{background:var(--lichen)}
+.loading-page__progress::-moz-progress-bar{background:var(--lichen)}
+.loading-page__count{margin:.85rem 0 0;color:#b8beb7;font-size:.7rem;letter-spacing:.04em}
+.loading-page__actions{display:flex;justify-content:center;gap:1rem;margin-top:2rem}
+.loading-page__actions[hidden]{display:none}
+.loading-page__actions button{padding:.6rem 1rem;border:1px solid #ced8c36b;background:transparent;color:var(--bone);cursor:pointer;font-size:.75rem;letter-spacing:.08em}
+.loading-page__actions button:hover{background:#ced8c312;border-color:var(--lichen)}

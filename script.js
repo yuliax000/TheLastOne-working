@@ -5,6 +5,7 @@ import { createStoryDialogController } from "./story-dialog.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 import { syncHabitatVideos, prepareHabitatVideo } from "./media.js?v=frame-ready-1";
 import { initIntroStartVisibility } from "./intro-start.js";
+import { initLoadingPage } from "./loading.js?v=1";
 import { chapterCopyMotion, chapterCardMotion, endingCardPose } from "./narrative-motion.js?v=straight-drop-1";
 
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -342,14 +343,15 @@ function init() {
   document.getElementById("timeline-list").innerHTML = renderTimeline(species);
   document.getElementById("chapters").innerHTML = renderChapters(species);
   document.getElementById("ending-items").innerHTML = renderEndingItems(recentExtinctions);
-  state.storyDialog = initStoryDialog();
-  state.audio = initGlobalAudio(document, globalAudio, species);
-  initIntroStartVisibility();
-
-  bindEvents();
-  if (!initGsapAnimations()) initChapterObservers();
-  setActiveSpecies(species[0].id);
-  document.body.classList.add("is-ready");
+  initLoadingPage(document, () => {
+    state.storyDialog = initStoryDialog();
+    state.audio = initGlobalAudio(document, globalAudio, species);
+    initIntroStartVisibility();
+    bindEvents();
+    if (!initGsapAnimations()) initChapterObservers();
+    setActiveSpecies(species[0].id);
+    document.body.classList.add("is-ready");
+  });
 }
 
 init();

@@ -9,11 +9,24 @@
       content="THE LAST ONE — a scrollytelling prototype about the final known individuals of extinct species."
     />
     <title>THE LAST ONE — Scrollytelling Prototype</title>
+    <script src="./loading-bootstrap.js?v=1"></script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles-redesign.css" />
     <link rel="stylesheet" href="./story-styles.css" />
   </head>
   <body>
+    <div class="loading-page" id="loading-page" role="dialog" aria-modal="true" aria-labelledby="loading-title" tabindex="-1">
+      <div class="loading-page__content">
+        <p class="loading-page__title" id="loading-title">THE LAST ONE</p>
+        <p class="loading-page__status" id="loading-status" role="status">Preparing the timeline…</p>
+        <progress class="loading-page__progress" id="loading-progress" max="100" value="0" aria-label="Resources ready"></progress>
+        <p class="loading-page__count" id="loading-count">Preparing media</p>
+        <div class="loading-page__actions" id="loading-actions" hidden>
+          <button type="button" id="loading-retry">Retry</button>
+          <button type="button" id="loading-continue">Continue</button>
+        </div>
+      </div>
+    </div>
     <a class="skip-link" href="#chapters">Skip to the stories</a>
     <audio id="global-audio" preload="none"></audio>
     <button
@@ -129,6 +142,6 @@
 
     <script src="./vendor/gsap.min.js"></script>
     <script src="./vendor/ScrollTrigger.min.js"></script>
-    <script type="module" src="./script.js?v=gentle-closing-1"></script>
+    <script type="module" src="./script.js?v=loading-1"></script>
   </body>
 </html>
