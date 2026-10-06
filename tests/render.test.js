@@ -9,7 +9,7 @@ import {
   renderEndingItems,
 } from "../render.js";
 import { syncHabitatVideos } from "../media.js";
-import { createGlobalAudioController } from "../global-audio.js";
+import { createGlobalAudioController, createLayeredAudioController } from "../global-audio.js";
 
 test("global audio exposes a reusable controller", async () => {
   const module = await import("../global-audio.js").catch(() => ({}));
@@ -67,11 +67,13 @@ test("global audio configuration and controls are present but inactive by defaul
   const data = await import("../data.js");
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
-  assert.deepEqual(data.globalAudio, {
-    src: "",
-    label: "Ambient soundscape",
-    volume: 0.35,
+  const button = { hidden: false, setAttribute() {}, addEventListener() {} };
+  const controller = createLayeredAudioController({
+    button, config: data.globalAudio, chapters: data.species,
+    createAudio: () => { throw new Error("Empty configuration must not create audio tracks"); },
   });
+  assert.equal(controller.enabled, false);
+  assert.equal(button.hidden, true);
   assert.match(html, /id="global-audio"/);
   assert.match(html, /id="sound-toggle"/);
 });

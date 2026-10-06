@@ -11,6 +11,7 @@ const state = {
   activeId: species[0].id,
   observer: null,
   storyDialog: null,
+  audio: null,
 };
 
 function getSpecies(id) {
@@ -53,6 +54,13 @@ export function initChapterObservers() {
         setActiveSpecies(visible.target.dataset.species);
         syncHabitatVideos(document.querySelectorAll(".chapter"), visible.target.dataset.species);
       }
+      // Native-scroll fallback also clears ambience outside the chapter field.
+      const centre = window.innerHeight / 2;
+      const current = Array.from(document.querySelectorAll(".chapter")).find(chapter => {
+        const rect = chapter.getBoundingClientRect();
+        return rect.top <= centre && rect.bottom > centre;
+      });
+      state.audio?.setChapter(current?.dataset.species || null);
     },
     { rootMargin: "-30% 0px -30% 0px", threshold: [0.1, 0.35, 0.6] },
   );
@@ -148,6 +156,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
     if (activeChapter === chapter) return;
     document.body.classList.add("is-story-active");
     setActiveSpecies(chapter.dataset.species);
+    state.audio?.setChapter(chapter.dataset.species);
     syncHabitatVideos(chapters, reduceMotion ? null : chapter.dataset.species);
     const card = chapter.querySelector(".species-card");
     const habitat = chapter.querySelector(".chapter__habitat");
@@ -212,6 +221,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
           gsap.to([card, habitat, veil], { autoAlpha: 0, duration: 0.25, overwrite: true });
           document.body.classList.remove("is-story-active");
           syncHabitatVideos(chapters, null);
+          state.audio?.setChapter(null);
           activeChapter = null;
         }
       },
@@ -225,6 +235,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
           });
           document.body.classList.remove("is-story-active");
           syncHabitatVideos(chapters, null);
+          state.audio?.setChapter(null);
           activeChapter = null;
         }
       },
@@ -280,9 +291,13 @@ function initStoryDialog() {
     content,
     stories,
     reducedMotion,
-    onOpen: () => syncHabitatVideos(document.querySelectorAll(".chapter"), null),
+    onOpen: () => {
+      syncHabitatVideos(document.querySelectorAll(".chapter"), null);
+      state.audio?.setStoryOpen(true);
+    },
     onClose: () => {
       syncHabitatVideos(document.querySelectorAll(".chapter"), state.activeId);
+      state.audio?.setStoryOpen(false);
     },
   });
 }
@@ -292,7 +307,7 @@ function init() {
   document.getElementById("chapters").innerHTML = renderChapters(species);
   document.getElementById("ending-items").innerHTML = renderEndingItems(recentExtinctions);
   state.storyDialog = initStoryDialog();
-  initGlobalAudio(document, globalAudio);
+  state.audio = initGlobalAudio(document, globalAudio, species);
   initIntroStartVisibility();
 
   bindEvents();

@@ -1,12 +1,19 @@
-// Optional site-wide ambience. Put the file in assets/audio and add its path.
-// Playback begins only after the visitor selects “Sound on”.
+// 三层音频：文件放 assets/audio/；空路径表示不使用，不会请求空文件。
+// 点击 Sound on 后播放。音乐和全局底音不随章节重新开始。
 export const globalAudio = {
-  src: "",
+  src: "", // 叙事音乐，例如 "./assets/audio/global-music.mp3"
   label: "Ambient soundscape",
-  volume: 0.35,
+  volume: 0.35, // 音乐音量：0–1
+  atmosphereSrc: "", // 全局环境底音，例如 "./assets/audio/global-atmosphere.mp3"
+  atmosphereVolume: 0.08, // 全局环境底音音量：0–1
+  chapterVolume: 0.18, // 各章环境音默认音量：0–1
+  crossfadeSeconds: 2.5, // 章节环境音交叉淡化时间（秒）
+  storyVolumeFactor: 0.2, // 打开文章时，两条全局音轨降到原音量的 20%
 };
 
 export const species = [
+  // 每章 audioSrc 填环境音路径；可以加 audioVolume: 0.15 单独调整该章。
+  // 例：audioSrc: "./assets/audio/great-auk-ambient.mp3"
   // Media paths are optional. Put files in assets/audio or assets/video, then
   // replace an empty string below with e.g. "./assets/video/great-auk-habitat.mp4".
   // Hero portraits accept landscape or portrait images. Use portraitFit "cover"
