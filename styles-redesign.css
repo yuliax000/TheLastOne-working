@@ -120,7 +120,7 @@ body{background:#1b1f1c}
 .ending__step{height:82svh;pointer-events:none}
 .is-static-ending .ending__steps{display:none}
 
-.sound-toggle{position:fixed;z-index:30;right:24px;bottom:22px;min-width:7.6rem;padding:.65rem .9rem;border:1px solid #ced8c34d;background:#1b1f1ced;color:var(--lichen);cursor:pointer;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+.sound-toggle{position:fixed;z-index:30;right:24px;top:22px;min-width:7.6rem;padding:.65rem .9rem;border:1px solid #ced8c34d;background:#1b1f1ced;color:var(--lichen);cursor:pointer;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
 .sound-toggle:hover{border-color:#ced8c3a6;background:#252b26}.sound-toggle:disabled{cursor:not-allowed;color:var(--stone);opacity:.7}.sound-toggle[hidden]{display:none}
 :root{--intro-fade-progress:0}
 .intro-sequence{position:relative;height:155svh;background:#171918}
@@ -152,7 +152,7 @@ body{background:#1b1f1c}
 .references-footer a{color:var(--lichen);letter-spacing:.14em;text-decoration:none;text-transform:uppercase}
 
 @media(max-width:760px){
-  .sound-toggle{right:12px;bottom:12px;min-width:6.8rem;font-size:.7rem}
+  .sound-toggle{right:12px;top:12px;min-width:6.8rem;font-size:.7rem}
   .references-hero{padding-top:80px}
   .reference-entry{grid-template-columns:1fr;gap:1rem}
   .reference-entry__year,.reference-entry h2,.reference-entry h3,.reference-entry p:not(.reference-entry__year){grid-column:1;grid-row:auto}

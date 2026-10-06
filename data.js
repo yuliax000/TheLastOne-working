@@ -1,10 +1,10 @@
 // 三层音频：文件放 assets/audio/；空路径表示不使用，不会请求空文件。
 // 点击 Sound on 后播放。音乐和全局底音不随章节重新开始。
 export const globalAudio = {
-  src: "", // 叙事音乐，例如 "./assets/audio/global-music.mp3"
+  src: "assets/audio/global-music.mp3", // 叙事音乐，例如 "./assets/audio/global-music.mp3"
   label: "Ambient soundscape",
   volume: 0.35, // 音乐音量：0–1
-  atmosphereSrc: "", // 全局环境底音，例如 "./assets/audio/global-atmosphere.mp3"
+  atmosphereSrc: "assets/audio/global-atmosphere.mp3", // 全局环境底音，例如 "./assets/audio/global-atmosphere.mp3"
   atmosphereVolume: 0.08, // 全局环境底音音量：0–1
   chapterVolume: 0.18, // 各章环境音默认音量：0–1
   crossfadeSeconds: 2.5, // 章节环境音交叉淡化时间（秒）
@@ -44,7 +44,7 @@ export const species = [
     portraitCredit: "Illustration reproduced from Hale (2017), courtesy of Sacristy Press.",
     archiveLabel: "",
     habitatVideo: "assets/video/greatAukHabitat1.mp4",
-    audioSrc: "",
+    audioSrc: "assets/audio/great-auk-chapter.mp3",
     videoSrc: "",
     sourceLabel: "",
 
@@ -72,7 +72,8 @@ export const species = [
     portraitCredit: "Martha, the last Passenger Pigeon · Photograph by Enno Meyer via Biodiversity Heritage Library · Public domain",
     archiveLabel: "",
     habitatVideo: "assets/video/passengerPigeonHabitat.mp4",
-    audioSrc: "",
+    audioSrc: "assets/audio/passenger-pigeon-2.mp3",
+    // audioVolume: 0.38,
     videoSrc: "",
     sourceLabel: "",
   },
@@ -99,7 +100,7 @@ export const species = [
     portraitCredit: "Thylacinus cynocephalus, Henry Constantine Richter, from John Gould’s The Mammals of Australia, vol. 1, 1863 · Royal Society of Tasmania",
     archiveLabel: "Beaumaris Zoo film · video placeholder",
     habitatVideo: "assets/video/ThylacineHabitatHatbitat.mp4",
-    audioSrc: "",
+    audioSrc: "assets/audio/thylacine-chapter-2.mp3",
     videoSrc: "",
     sourceLabel: "",
   },
@@ -126,7 +127,7 @@ export const species = [
     portraitCredit: "",
     archiveLabel: "",
     habitatVideo: "assets/video/kauaiOoHabitat.mp4",
-    audioSrc: "",
+    audioSrc: "assets/audio/kauaiOo-chapter.mp3",
     videoSrc: "",
     sourceLabel: "",
   },
@@ -153,7 +154,7 @@ export const species = [
     portraitCredit: "Baiji illustration · Nature Picture Library · Image 01330872",
     archiveLabel: "",
     habitatVideo: "assets/video/BaijiHabitat.mp4",
-    audioSrc: "",
+    audioSrc: "assets/audio/baiji-chapter.mp3",
     videoSrc: "",
     sourceLabel: "",
   },
@@ -180,7 +181,7 @@ export const species = [
     portraitCredit: "",
     archiveLabel: "Pinta habitat change · archive placeholder",
     habitatVideo: "assets/video/PintaHabitat.mp4",
-    audioSrc: "",
+    audioSrc: "assets/audio/pinta-chapter.mp3",
     videoSrc: "",
     sourceLabel: "Source and image credit to be added",
   },
