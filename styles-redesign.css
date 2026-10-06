@@ -61,7 +61,9 @@
 :root{--ink:#1b1f1c;--bone:#eeeee6;--lichen:#ced8c3;--stone:#a7aca5;--taupe:#c1ad8c}
 body{background:#1b1f1c}
 .intro{background:radial-gradient(circle at 72% 43%,#566159 0,#303831 32%,#1b1f1c 72%)}
-.chapter__veil{background:linear-gradient(90deg,#151915c9,#18201970 52%,#18201938),linear-gradient(0deg,#15191570,transparent 42%)}
+/* No overlay on habitat backgrounds; keep the species card unchanged. */
+.chapter__veil{background:none}
+.chapter__habitat::before{background:none}
 .species-card{background:#1d211ee8;border-top-color:#e7e7df61;border-bottom-color:#ced8c324;box-shadow:0 24px 64px #00000040}
 .species-card__summary{color:#eeeeE6e0}
 .story-link{border-bottom-color:#ced8c37a}
