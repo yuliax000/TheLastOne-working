@@ -59,14 +59,17 @@ export function renderChapters(items) {
               <span>${escapeHtml(item.index)} / 06</span>
               <span>${escapeHtml(item.location)}</span>
             </div>
-            <div
-              class="species-card__portrait"
-              role="img"
-              aria-label="${escapeHtml(item.portraitLabel)}"
-              style="--portrait-fit: ${normalizePortraitFit(item.portraitFit)}; --portrait-position: ${escapeHtml(normalizePortraitPosition(item.portraitPosition))}"
-            >
-              ${item.portraitImage ? `<img class="species-card__portrait-image" src="${escapeHtml(item.portraitImage)}" alt="${escapeHtml(item.portraitLabel)}" onerror="this.hidden=true" />` : ""}
-            </div>
+            <figure class="species-card__portrait-group">
+              <div
+                class="species-card__portrait"
+                role="img"
+                aria-label="${escapeHtml(item.portraitLabel)}"
+                style="--portrait-fit: ${normalizePortraitFit(item.portraitFit)}; --portrait-position: ${escapeHtml(normalizePortraitPosition(item.portraitPosition))}"
+              >
+                ${item.portraitImage ? `<img class="species-card__portrait-image" src="${escapeHtml(item.portraitImage)}" alt="${escapeHtml(item.portraitLabel)}" onerror="this.hidden=true" />` : ""}
+              </div>
+              ${item.portraitCredit ? `<figcaption class="species-card__portrait-credit">${escapeHtml(item.portraitCredit)}</figcaption>` : ""}
+            </figure>
             <p class="species-card__year">${escapeHtml(item.year)}</p>
             <h2 id="title-${escapeHtml(item.id)}">${escapeHtml(item.name)}</h2>
             <p class="species-card__individual">${escapeHtml(item.individualName)}</p>
@@ -88,7 +91,9 @@ export function renderEndingItems(items) {
     .map(
       (item) => `
         <article class="ending-card" data-ending-item data-ending-id="${escapeHtml(item.id)}">
-          <div class="ending-card__image" aria-hidden="true"></div>
+          <div class="ending-card__image">
+            ${item.image ? `<img class="ending-card__photo" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" onerror="this.hidden=true" />` : ""}
+          </div>
           <div class="ending-card__caption">
             <p class="ending-card__year">${escapeHtml(item.year)}</p>
             <h3>${escapeHtml(item.name)}</h3>

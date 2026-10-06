@@ -113,6 +113,14 @@ test("loaded story images keep their intrinsic aspect ratio without cropping", (
   assert.doesNotMatch(css, /\.story-media__image,\s*\.story-media__video\s*\{[^}]*height:\s*100%/s);
 });
 
+test("story captions and credits occupy separate lines", () => {
+  const css = readFileSync(new URL("../story-styles.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.story-media__caption\s*\{[^}]*display:\s*grid/s);
+  assert.match(css, /\.story-media__caption-text\s*\{[^}]*display:\s*block/s);
+  assert.match(css, /\.story-media__credit\s*\{[^}]*display:\s*block[^}]*text-align:\s*left/s);
+});
+
 test("HTTPS iframe embeds from multiple providers are parsed without injecting raw HTML", () => {
   const embedCode = `<iframe src="https://macaulaylibrary.org/asset/228099/embed" height="300" width="640" frameborder="0" allowfullscreen></iframe>`;
   assert.deepEqual(parseEmbedCode(embedCode), {

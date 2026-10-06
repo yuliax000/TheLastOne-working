@@ -42,22 +42,24 @@
       <ol class="timeline__list" id="timeline-list"></ol>
     </nav>
 
-    <header class="intro">
-      <div class="intro__content">
-        <h1>
-          THE LAST
-          <span>ONE</span>
-        </h1>
-        <p class="intro__statement">
-          Extinction rarely arrives as a number. Sometimes it arrives as one
-          animal, waiting for an answer that will never come.
-        </p>
-      </div>
-      <a class="intro__start" href="#species-great-auk">
-        <span>Begin the timeline</span>
-        <span aria-hidden="true">↓</span>
-      </a>
-    </header>
+    <div class="intro-sequence">
+      <header class="intro">
+        <div class="intro__content">
+          <h1>
+            THE LAST
+            <span>ONE</span>
+          </h1>
+          <p class="intro__statement">
+            Extinction rarely arrives as a number. Sometimes it arrives as one
+            animal, waiting for an answer that will never come.
+          </p>
+        </div>
+        <a class="intro__start" href="#species-great-auk">
+          <span>Begin the timeline</span>
+          <span aria-hidden="true">↓</span>
+        </a>
+      </header>
+    </div>
 
     <main id="main-content">
       <div id="chapters"></div>
@@ -65,7 +67,13 @@
       <section class="ending" id="ending" aria-labelledby="ending-title">
         <div class="ending__stage">
           <div class="ending__header">
-            <p>Each absence leaves a space for us to notice.</p>
+            <p>
+              Each absence leaves a space for us to notice.
+              <span class="ending__date-note">
+    Years indicate when extinction was announced or formally recognised,
+    not necessarily when the last individual died.
+  </span>
+            </p>
             <p class="ending__year" id="ending-year" aria-live="polite">2012</p>
           </div>
           <h2 id="ending-title">Recent traces.</h2>
@@ -106,8 +114,11 @@
     </dialog>
 
     <footer class="site-footer">
-      <p>THE LAST ONE · Working prototype</p>
-      <p>Images, audio and verified citations to be added.</p>
+      <p>THE LAST ONE · A digital narrative by Yulia Xiong</p>
+      <p>
+        Created for educational purposes. Media credits and sources are listed in
+        <a href="./references.html" style="color: inherit; text-underline-offset: 3px;">References</a>.
+      </p>
     </footer>
 
     <noscript>

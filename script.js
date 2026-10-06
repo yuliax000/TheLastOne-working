@@ -4,6 +4,7 @@ import { initGlobalAudio } from "./global-audio.js";
 import { createStoryDialogController } from "./story-dialog.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 import { syncHabitatVideos } from "./media.js";
+import { initIntroStartVisibility } from "./intro-start.js";
 
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const state = {
@@ -173,7 +174,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
       { autoAlpha: 0 },
       {
         autoAlpha: 1,
-        duration: reduceMotion ? 0 : 0.45,
+        duration: reduceMotion ? 0 : 0.7,
         ease: "power4.out",
         overwrite: true,
       },
@@ -184,7 +185,8 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
       {
         autoAlpha: 1,
         yPercent: -50,
-        duration: reduceMotion ? 0 : 0.45,
+        duration: reduceMotion ? 0 : 0.7,
+        delay: reduceMotion ? 0 : 0.08,
         ease: "power4.out",
         overwrite: true,
       },
@@ -201,7 +203,7 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
 
     ScrollTrigger.create({
       trigger: chapter,
-      start: "top center",
+      start: index === 0 ? "top 80%" : "top center",
       end: "bottom center",
       onEnter: () => activateChapter(chapter),
       onEnterBack: () => activateChapter(chapter),
@@ -215,7 +217,12 @@ export function initPinnedChapters(gsap, ScrollTrigger, reduceMotion = false) {
       },
       onLeaveBack: () => {
         if (index === 0) {
-          gsap.set([card, habitat, veil], { autoAlpha: 0 });
+          gsap.to([card, habitat, veil], {
+            autoAlpha: 0,
+            duration: reduceMotion ? 0 : 0.4,
+            ease: "power3.out",
+            overwrite: true,
+          });
           document.body.classList.remove("is-story-active");
           syncHabitatVideos(chapters, null);
           activeChapter = null;
@@ -286,6 +293,7 @@ function init() {
   document.getElementById("ending-items").innerHTML = renderEndingItems(recentExtinctions);
   state.storyDialog = initStoryDialog();
   initGlobalAudio(document, globalAudio);
+  initIntroStartVisibility();
 
   bindEvents();
   if (!initGsapAnimations()) initChapterObservers();

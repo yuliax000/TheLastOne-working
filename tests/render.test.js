@@ -90,6 +90,31 @@ test("the recent extinction collage does not include a speculative 2026 card", (
   assert.doesNotMatch(renderEndingItems(recentExtinctions), /The next species/i);
 });
 
+test("ending cards render optional images with a silent fallback", () => {
+  const html = renderEndingItems([
+    {
+      id: "with-image",
+      year: 2020,
+      name: "With Image",
+      status: "",
+      image: "./assets/images/ending/with-image.jpg",
+    },
+    {
+      id: "without-image",
+      year: 2021,
+      name: "Without Image",
+      status: "",
+      image: "",
+    },
+  ]);
+
+  assert.match(html, /class="ending-card__photo"/);
+  assert.match(html, /src="\.\/assets\/images\/ending\/with-image\.jpg"/);
+  assert.match(html, /alt="With Image"/);
+  assert.match(html, /onerror="this\.hidden=true"/);
+  assert.equal((html.match(/class="ending-card__photo"/g) || []).length, 1);
+});
+
 test("renderers include navigation, chapter controls, and ending cards", () => {
   const chapters = renderChapters(species);
   assert.match(
@@ -262,12 +287,43 @@ test("animated chapters use a fixed stage and scroll-driven card switching", asy
   assert.match(css, /\.has-gsap \.chapter\s*\{[^}]*min-height:\s*100svh/s);
   assert.match(source, /ScrollTrigger\.create\(/);
   assert.match(source, /onEnterBack:\s*\(\)\s*=>\s*activateChapter/);
-  assert.match(source, /duration:\s*reduceMotion \? 0 : 0\.45/);
+  assert.match(source, /duration:\s*reduceMotion \? 0 : 0\.7/);
   assert.match(source, /ease:\s*"power4\.out"/);
   assert.doesNotMatch(source, /start:\s*"top 78%"/);
   assert.doesNotMatch(source, /backdrop-filter:\s*blur/);
   assert.match(css, /transform:\s*scaleY\(var\(--timeline-progress\)\)/);
   assert.match(source, /style\.setProperty\("--timeline-progress", String\(progress\)\)/);
+});
+
+test("chapter portraits expose an optional credit line below the image", () => {
+  const html = renderChapters([
+    { ...species[0], portraitCredit: "Museum collection · View source" },
+    { ...species[1], portraitCredit: "" },
+  ]);
+
+  assert.match(html, /class="species-card__portrait-group"/);
+  assert.match(html, /class="species-card__portrait-credit"[^>]*>Museum collection · View source</);
+  assert.equal((html.match(/class="species-card__portrait-credit"/g) || []).length, 1);
+});
+
+test("collapsed species cards never trap the page wheel", async () => {
+  const css = await readFile(
+    new URL("../styles-redesign.css", import.meta.url),
+    "utf8",
+  );
+  const fixedCardRule = css.match(/\.has-gsap \.species-card\{([^}]*)\}/s)?.[1] ?? "";
+
+  assert.doesNotMatch(fixedCardRule, /overflow-y:\s*auto/);
+  assert.doesNotMatch(fixedCardRule, /overscroll-behavior:\s*contain/);
+  assert.match(fixedCardRule, /overflow:\s*visible/);
+});
+
+test("the first species crossfades in before later chapter trigger points", async () => {
+  const source = await readFile(new URL("../script.js", import.meta.url), "utf8");
+
+  assert.match(source, /start:\s*index === 0 \? "top 80%" : "top center"/);
+  assert.match(source, /duration:\s*reduceMotion \? 0 : 0\.7/);
+  assert.match(source, /delay:\s*reduceMotion \? 0 : 0\.08/);
 });
 
 test("ending builds an accumulating photo field with a hopeful closing question", async () => {
@@ -320,7 +376,7 @@ test("main motion is always enabled without a visitor-facing reduction control",
   assert.match(source, /const reducedMotion = motionQuery\.matches/);
 });
 
-test("the ending links to a six-species reference page", async () => {
+test("the ending links to references for the six chapters and five recent traces", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const references = await readFile(
     new URL("../references.html", import.meta.url),
@@ -329,7 +385,7 @@ test("the ending links to a six-species reference page", async () => {
 
   assert.match(html, /href="\.\/references\.html"/);
   assert.match(references, /Back to story/i);
-  assert.equal((references.match(/class="reference-entry"/g) || []).length, 6);
+  assert.equal((references.match(/class="reference-entry"/g) || []).length, 11);
   for (const name of [
     "Great Auk",
     "Passenger Pigeon",
@@ -337,9 +393,25 @@ test("the ending links to a six-species reference page", async () => {
     "Kauaʻi ʻōʻō",
     "Baiji",
     "Lonesome George",
+    "Bramble Cay Melomys",
+    "Christmas Island Pipistrelle",
+    "Northern White Rhinoceros",
+    "Chinese Paddlefish",
+    "Slender-billed Curlew",
   ]) {
     assert.match(references, new RegExp(name));
   }
+});
+
+test("reference citations render as a vertical list", async () => {
+  const css = await readFile(
+    new URL("../styles-redesign.css", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(css, /\.reference-entry h3\s*\{[^}]*grid-column:\s*3/s);
+  assert.match(css, /\.reference-entry p:not\(\.reference-entry__year\)\s*\{[^}]*grid-column:\s*3/s);
+  assert.match(css, /\.reference-entry p:not\(\.reference-entry__year\)\s*\+\s*p\s*\{[^}]*border-top:/s);
 });
 
 test("the final statement stays calm, centered, and on one line", async () => {
