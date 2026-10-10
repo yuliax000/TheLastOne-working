@@ -59,6 +59,7 @@ export function createLayeredAudioController({
   now = () => performance.now(),
 }) {
   let soundOn = false;
+  let activationBlocked = false;
   let chapterId = null;
   let storyOpen = false;
   let suspended = false;
@@ -72,8 +73,8 @@ export function createLayeredAudioController({
     button.hidden = tracks.length === 0;
     const unavailable = tracks.length > 0 && tracks.every(track => track.failed);
     button.disabled = unavailable;
-    button.textContent = unavailable ? "Sound unavailable" : soundOn ? "Sound off" : "Sound on";
-    button.setAttribute("aria-pressed", String(soundOn && !unavailable));
+    button.textContent = unavailable ? "Sound unavailable" : soundOn && !activationBlocked ? "Sound off" : "Sound on";
+    button.setAttribute("aria-pressed", String(soundOn && !activationBlocked && !unavailable));
   }
 
   function addTrack(kind, src, volume, id = null) {
@@ -158,8 +159,9 @@ export function createLayeredAudioController({
             track.audio.volume = 0;
             track.fade = null;
           } else beginFade(track);
-        }).catch(() => {
-          track.failed = true;
+        }).catch(error => {
+          if (error?.name === "NotAllowedError") activationBlocked = true;
+          else track.failed = true;
           track.target = 0;
           track.fade = null;
           track.audio.pause();
@@ -172,8 +174,18 @@ export function createLayeredAudioController({
     return Promise.all(pending);
   }
   async function toggle() {
+    if (soundOn && activationBlocked) return enable();
     if (!tracks.some(track => !track.failed)) return false;
     soundOn = !soundOn;
+    await reconcile();
+    if (tracks.every(track => track.failed)) soundOn = false;
+    updateButton();
+    return soundOn;
+  }
+  async function enable() {
+    if (!tracks.some(track => !track.failed)) return false;
+    activationBlocked = false;
+    soundOn = true;
     await reconcile();
     if (tracks.every(track => track.failed)) soundOn = false;
     updateButton();
@@ -184,6 +196,8 @@ export function createLayeredAudioController({
   return {
     enabled: tracks.length > 0,
     toggle,
+    enable,
+    get needsGesture() { return soundOn && activationBlocked; },
     setChapter(id) { if (chapterId !== id) { chapterId = id; reconcile(); } },
     setStoryOpen(value) { storyOpen = Boolean(value); reconcile(); },
     setSuspended(value) { suspended = Boolean(value); reconcile(); },
@@ -201,5 +215,15 @@ export function initGlobalAudio(documentRef, config, chapters = []) {
   });
   documentRef.addEventListener("visibilitychange", () => controller.setSuspended(documentRef.hidden));
   controller.setSuspended(documentRef.hidden);
+  if (config.defaultOn) {
+    controller.enable();
+    const activate = event => {
+      if (event.type === "keydown" && !["Enter", " "].includes(event.key)) return;
+      if (event.target?.closest?.("#sound-toggle")) return;
+      if (controller.needsGesture) controller.enable();
+    };
+    documentRef.addEventListener("pointerdown", activate);
+    documentRef.addEventListener("keydown", activate);
+  }
   return controller;
 }

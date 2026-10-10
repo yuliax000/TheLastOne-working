@@ -104,3 +104,24 @@ test("chapter-only configuration still exposes sound control without globals", a
   controller.setChapter("sea"); await controller.toggle(); await advance(2000);
   assert.equal(media("sea.mp3").paused, false);
 });
+
+test("default sound can start and autoplay rejection remains retryable", async () => {
+  const { controller, media, button } = setup();
+  let blocked = true;
+  const music = media("music.mp3");
+  music.play = function () {
+    if (blocked) return Promise.reject(Object.assign(new Error("activation required"), { name: "NotAllowedError" }));
+    this.paused = false; return Promise.resolve();
+  };
+  assert.equal(typeof controller.enable, "function");
+  await controller.enable();
+  assert.equal(button.disabled, false);
+  assert.equal(controller.needsGesture, true);
+  assert.equal(button.textContent, "Sound on");
+  blocked = false;
+  await controller.toggle();
+  assert.equal(music.paused, false);
+  assert.equal(controller.needsGesture, false);
+  await controller.toggle();
+  assert.equal(music.paused, true);
+});

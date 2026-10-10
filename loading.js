@@ -49,6 +49,13 @@ export function createLoadingGate({ tasks = [], timeoutMs = 12000,
   return { start, retry: start, continue: () => enter(false) };
 }
 
+export function loadingBlockedMessage({ reason, failed = [] }) {
+  const message = reason === "timeout"
+    ? "Loading is taking a little longer. Retry, or continue with available media."
+    : "Some media could not be loaded. Retry, or continue with available media.";
+  return failed.length ? `${message} Unavailable: ${failed.join(", ")}` : message;
+}
+
 function waitForMedia(element, signal, video = false) {
   return new Promise((resolve, reject) => {
     const event = video ? "loadeddata" : "load";
@@ -96,9 +103,9 @@ export function initLoadingPage(documentRef, onReady) {
   inertElements.forEach(element => { element.inert = true; });
   overlay.focus({ preventScroll: true });
   const tasks = [...documentRef.querySelectorAll(".species-card__portrait-image, .ending-card__photo")]
-    .map((image, index) => ({ label: `Image ${index + 1}`, load: signal => waitForMedia(image, signal) }));
+    .map(image => ({ label: image.getAttribute("src") || "Image (missing path)", load: signal => waitForMedia(image, signal) }));
   documentRef.querySelectorAll("[data-habitat-video]").forEach((video, index) => {
-    tasks.push({ label: `Habitat ${index + 1}`, load: signal => waitForMedia(video, signal, true) });
+    tasks.push({ label: video.getAttribute("src") || video.querySelector("source")?.getAttribute("src") || `Habitat ${index + 1}`, load: signal => waitForMedia(video, signal, true) });
   });
   if (documentRef.fonts) tasks.push({ label: "Fonts", load: () => documentRef.fonts.ready });
   const gate = createLoadingGate({ tasks,
@@ -106,10 +113,8 @@ export function initLoadingPage(documentRef, onReady) {
       progress.value = percent;
       count.textContent = `${loaded} / ${total} resources ready`;
     },
-    onBlocked: ({ reason }) => {
-      status.textContent = reason === "timeout"
-        ? "Loading is taking a little longer. Retry, or continue with available media."
-        : "Some media could not be loaded. Retry, or continue with available media.";
+    onBlocked: state => {
+      status.textContent = loadingBlockedMessage(state);
       actions.hidden = false;
     },
     onReady: () => {

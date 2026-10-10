@@ -3,6 +3,12 @@ import assert from "node:assert/strict";
 const module = await import("../loading.js").catch(() => ({}));
 const flush = () => new Promise(resolve => setImmediate(resolve));
 
+test("blocked loading identifies failed media files", () => {
+  assert.equal(typeof module.loadingBlockedMessage, "function");
+  assert.match(module.loadingBlockedMessage({ reason: "failed", failed: ["assets/images/greatauk.jpg"] }), /greatauk\.jpg/);
+  assert.match(module.loadingBlockedMessage({ reason: "timeout", failed: [] }), /longer/);
+});
+
 test("loading reports completed assets and enters only after every task succeeds", async () => {
   assert.equal(typeof module.createLoadingGate, "function");
   let first, second; const progress = []; const ready = [];

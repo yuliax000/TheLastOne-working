@@ -1,11 +1,11 @@
-import { globalAudio, species, recentExtinctions } from "./data.js";
+import { globalAudio, species, recentExtinctions } from "./data.js?v=audio-default-2";
 import { stories } from "./story-content.js";
-import { initGlobalAudio } from "./global-audio.js";
+import { initGlobalAudio } from "./global-audio.js?v=audio-default-2";
 import { createStoryDialogController } from "./story-dialog.js";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 import { syncHabitatVideos, prepareHabitatVideo } from "./media.js?v=frame-ready-1";
 import { initIntroStartVisibility } from "./intro-start.js";
-import { initLoadingPage } from "./loading.js?v=1";
+import { initLoadingPage } from "./loading.js?v=2";
 import { chapterCopyMotion, chapterCardMotion, endingCardPose } from "./narrative-motion.js?v=straight-drop-1";
 
 const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");

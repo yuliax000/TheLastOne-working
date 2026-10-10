@@ -1,6 +1,7 @@
 // 三层音频：文件放 assets/audio/；空路径表示不使用，不会请求空文件。
 // 点击 Sound on 后播放。音乐和全局底音不随章节重新开始。
 export const globalAudio = {
+  defaultOn: true, // 默认尝试开启；浏览器拦截时，在首次点击页面后播放。
   src: "assets/audio/global-music.mp3", // 叙事音乐，例如 "./assets/audio/global-music.mp3"
   label: "Ambient soundscape",
   volume: 0.35, // 音乐音量：0–1
