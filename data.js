@@ -38,7 +38,7 @@ export const species = [
     accent: "#9aa58e",
     habitatLabel: "",
     portraitLabel: "",
-    portraitImage: "/assets/images/greatauk.jpg",
+    portraitImage: "./assets/images/greatauk.jpg",
     portraitFit: "contain",
     portraitPosition: "30% center",
     portraitCredit: "Illustration reproduced from Hale (2017), courtesy of Sacristy Press.",
