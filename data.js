@@ -160,11 +160,11 @@ export const species = [
     sourceLabel: "",
   },
   {
-    id: "Pinta Island Tortoise",
+    id: "lonesome-george",
     storyId: "pinta-tortoise",
     index: "06",
     year: 2012,
-    name: "Lonesome George",
+    name: "Pinta Island Tortoise",
     individualName: "Lonesome George",
     scientificName: "Chelonoidis abingdonii",
     location: "Pinta Island · Galápagos",
