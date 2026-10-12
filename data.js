@@ -160,7 +160,7 @@ export const species = [
     sourceLabel: "",
   },
   {
-    id: "lonesome-george",
+    id: "Pinta Island Tortoise",
     storyId: "pinta-tortoise",
     index: "06",
     year: 2012,
