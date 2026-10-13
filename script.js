@@ -1,7 +1,7 @@
 import { globalAudio, species, recentExtinctions } from "./data.js?v=audio-default-2";
 import { stories } from "./story-content.js";
 import { initGlobalAudio } from "./global-audio.js?v=audio-default-2";
-import { createStoryDialogController } from "./story-dialog.js";
+import { createStoryDialogController } from "./story-dialog.js?v=slower-5";
 import { renderChapters, renderEndingItems, renderTimeline } from "./render.js";
 import { syncHabitatVideos, prepareHabitatVideo } from "./media.js?v=frame-ready-1";
 import { initIntroStartVisibility } from "./intro-start.js";
@@ -321,7 +321,8 @@ function initStoryDialog() {
   const scroller = document.getElementById("story-dialog-scroller");
   const content = document.getElementById("story-dialog-content");
   if (!dialog || !scroller || !content) return null;
-  const reducedMotion = motionQuery.matches;
+  // This project explicitly keeps narrative motion enabled (including stories).
+  const reducedMotion = false;
   return createStoryDialogController({
     dialog,
     scroller,

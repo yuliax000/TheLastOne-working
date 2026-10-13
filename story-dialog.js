@@ -1,4 +1,5 @@
 import { createStoryArticle, getAdjacentStory } from "./story-renderer.js";
+import { initStoryMotion } from "./story-motion.js?v=slower-5";
 
 export function stopStoryMedia(root) {
   root.querySelectorAll("audio, video").forEach((media) => media.pause());
@@ -35,6 +36,7 @@ export function createStoryDialogController({
   let openingTrigger = null;
   let savedScrollY = 0;
   let cleanedUp = true;
+  let stopMotion = () => {};
 
   function getStory(id) {
     return stories.find((story) => story.id === id) || null;
@@ -59,12 +61,14 @@ export function createStoryDialogController({
     const story = getStory(storyId);
     if (!story) return false;
     activeId = story.id;
+    stopMotion();
     content.replaceChildren(createStoryArticle(documentRef, story));
     scroller.scrollTop = 0;
     updateNavigation();
     dialog.dataset.activeStory = activeId;
     dialog.classList.toggle("is-reduced-motion", reducedMotion);
     focusHeading();
+    stopMotion = initStoryMotion({ content, scroller, reducedMotion });
     return true;
   }
 
@@ -84,6 +88,7 @@ export function createStoryDialogController({
   function cleanup() {
     if (cleanedUp) return;
     cleanedUp = true;
+    stopMotion();
     stopStoryMedia(dialog);
     documentRef.body.classList.remove("is-story-dialog-open");
     documentRef.body.style.top = "";
